@@ -1,0 +1,27 @@
+{
+  "name": "uni-code",
+  "version": "1.0.0",
+  "description": "条形码 二维码",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "code"
+  ],
+  "author": "wmf",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.15.5",
+    "@babel/preset-env": "^7.15.6",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-typescript2": "^0.30.0",
+    "rollup-plugin-uglify": "^6.0.4",
+    "typescript": "^4.4.3"
+  },
+  "dependencies": {
+    "rollup": "^2.57.0"
+  }
+}
