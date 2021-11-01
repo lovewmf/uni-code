@@ -16,6 +16,8 @@
   "devDependencies": {
     "@babel/core": "^7.15.5",
     "@babel/preset-env": "^7.15.6",
+    "@dcloudio/types": "^2.5.12",
+    "@types/uni-app": "^1.4.4",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-typescript2": "^0.30.0",
     "rollup-plugin-uglify": "^6.0.4",
