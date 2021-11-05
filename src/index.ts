@@ -475,9 +475,9 @@ export const OperationCode = function (opt:OperationCodePars,callback?:void) {
             x += barW + spcW;
         }
     }
-    CTX.draw(false,(res)=>{
-        // callback({})
-    });
+    // CTX.draw(false,(res)=>{
+    //     // callback({})
+    // });
 }
 interface areaPars {
     width: number,
