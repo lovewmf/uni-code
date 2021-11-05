@@ -405,7 +405,7 @@ interface OperationCodePars {
 */
 export const OperationCode = function (opt:OperationCodePars) {
 
-    let CTX:  object;
+    let CTX:  any;
     if (Object.prototype.toString.call(opt.id) == '[object String]') {
         CTX = uni.createCanvasContext(<string>opt.id, opt.ctx || null);
     } else if (Object.prototype.toString.call(opt.id) == '[object Object]') {
@@ -458,12 +458,12 @@ class GraphicContent {
     quiet: number;
     borderSize: number = 0;
     paddingWidth: number = 0;
-    ctx: object;
+    ctx: any;
     color: string;
     backGroud: string;
     area: areaPars;
 
-    constructor (ctx: CanvasRenderingContext2D,width:number,height:number,color:string,backGroud:string) {
+    constructor (ctx: any,width:number,height:number,color:string,backGroud:string) {
         this.ctx = ctx;
         this.width = width;
         this.height = height;
