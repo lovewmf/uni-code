@@ -298,7 +298,7 @@ export const StringToCode128 = function (code:string):number[] {
         }
         if (shifter != -1) {
             result.push(shifter);
-            result.push(codeValue(chr2));
+            result.push(codeValue(chr1));
         }
         else {
             if (currcs == CODESET.C) {
@@ -395,18 +395,21 @@ interface OperationCodePars {
     height: number,
     code: string,
     bgColor: string,
-    color: string[]
+    color: string,
     ctx?: object
 }
-
-// 条形码
+/**
+* @author wmf❤洛尘 
+* @method OperationCode 创建条形码
+* @description 使用与UniApp的条形码
+*/
 export const OperationCode = function (opt:OperationCodePars) {
 
-    let CTXC:  UniApp.CanvasContex;
+    let CTX:  object;
     if (Object.prototype.toString.call(opt.id) == '[object String]') {
-        CTXC = uni.createCanvasContext(<string>opt.id, opt.ctx || null);
+        CTX = uni.createCanvasContext(<string>opt.id, opt.ctx || null);
     } else if (Object.prototype.toString.call(opt.id) == '[object Object]') {
-        CTXC = opt.id;
+        // CTXC = opt.id;
     } else {
         console.warn("没有找到条形码canvas id或者实列!");
         return
@@ -418,9 +421,36 @@ export const OperationCode = function (opt:OperationCodePars) {
     
     const width: number = UNIT_CONVERSION(opt.width);
     const height: number = UNIT_CONVERSION(opt.height);
-    const code: number[] = StringToCode128(opt.code);
+    const CodeNum: number[] = StringToCode128(opt.code);
+    
+    let gc = new GraphicContent(CTX, width, height,opt.color || "#000000",opt.bgColor || "#ffffff");
+    let barWeight = gc.area.width / ((CodeNum.length - 3) * 11 + 35);
 
-    let gc = new GraphicContent(CTXC, width, height,opt.color || "#000000",opt.bgColor || "#ffffff");
+    let x:number = gc.area.left;
+    const y = gc.area.top;
+    for (let i = 0; i < CodeNum.length; i++) {
+        const c = CodeNum[i];
+        for (let bar = 0; bar < 8; bar += 2) {
+            const barW = PATTERNS[c][bar] * barWeight;
+            // var barH = height - y - this.border;
+            const barH = height - y;
+            const spcW = PATTERNS[c][bar + 1] * barWeight;
+            if (barW > 0) {
+                gc.fillFgRect(x, y, barW, barH);
+            }
+
+            x += barW + spcW;
+        }
+    }
+    // CTX.draw(false,(res)=>{
+
+    // });
+}
+interface areaPars {
+    width: number,
+    height: number,
+    top: number,
+    left: number
 }
 class GraphicContent {
     width: number;
@@ -431,9 +461,9 @@ class GraphicContent {
     ctx: object;
     color: string;
     backGroud: string;
-    area: object;
+    area: areaPars;
 
-    constructor (ctx: object,width:number,height:number,color:string,backGroud:string) {
+    constructor (ctx: CanvasRenderingContext2D,width:number,height:number,color:string,backGroud:string) {
         this.ctx = ctx;
         this.width = width;
         this.height = height;
@@ -441,22 +471,26 @@ class GraphicContent {
         this.color = color;
         this.backGroud = backGroud;
         this.area = {
-            width : width - this.paddingWidth * 2 - this.quiet * 2,
+            width: width - this.paddingWidth * 2 - this.quiet * 2,
             height: height - this.borderSize * 2,
-            top   : this.borderSize - 4,
-            left  : this.borderSize + this.quiet
+            top: this.borderSize - 4,
+            left: this.borderSize + this.quiet
         };
+        this.fillBgRect(0,0, width, height);
+        this.fillBgRect(0, this.borderSize, width, height - this.borderSize * 2);
     }
-    fillFgRect(ctx:object, width:number, height:number, color:string) {
-		this.FILLRECT(ctx, width, height, color, this.color);
+    
+    fillFgRect(x:number,y:number, width:number, height:number) {
+		this.FILLRECT(x,y,width, height);
 	};
-	fillBgRect(ctx:object, width:number, height:number, color:string) {
-		this.FILLRECT(ctx, width, height, color, this.backGroud);
+	fillBgRect(x:number,y:number, width:number, height:number) {
+		this.FILLRECT(x,y, width, height);
 	};
-	FILLRECT(ctx:object, width:number, height:number, color:string, backGroud:string) {
-		this.ctx.setFillStyle(backGroud);
-		this.ctx.fillRect(ctx, width, height, color);
+	FILLRECT(x:number,y:number, width:number, height:number) {
+		this.ctx.setFillStyle(this.backGroud);
+		this.ctx.fillRect(x, width, height, this.color);
 	}
+    // fill background
 }
 
 
