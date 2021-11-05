@@ -1,10 +1,41 @@
 /**
 * @author wmf❤洛尘
 * @Date 2021-10-28
-* @LastEditTime 2021-10-28
+* @LastEditTime 2021-11-05
 * @description uni-app 二维码生成
 * */
 
+const CHAR_TILDE: number = 126;
+const CODE_FNC1: number = 102;
+const SET_STARTA: number = 103;
+const SET_STARTB: number = 104;
+const SET_STARTC: number = 105;
+const SET_SHIFT: number = 98;
+const SET_CODEA: number = 101;
+const SET_CODEB: number = 100;
+const SET_STOP: number = 106;
+
+
+interface  PCodeOpt {
+    CHAR_TILDE: number
+}
+const REPLACE_CODES:PCodeOpt = {
+    CHAR_TILDE: CODE_FNC1 //GS1-128
+}
+interface  Provider {
+    ANY: number,
+    AB: number,
+    A: number,
+    B: number,
+    C: number
+}
+const CODESET:Provider = {
+    ANY: 1,
+    AB: 2,
+    A: 3,
+    B: 4,
+    C: 5
+};
 const adelta:number[] = [
     0, 11, 15, 19, 23, 27, 31,16,
     18, 20, 22, 24,26, 28, 20, 22,
@@ -78,11 +109,356 @@ const gexp:number[] = [
     0x12, 0x24, 0x48, 0x90, 0x3d, 0x7a, 0xf4, 0xf5, 0xf7, 0xf3, 0xfb, 0xeb, 0xcb, 0x8b, 0x0b, 0x16,
     0x2c, 0x58, 0xb0, 0x7d, 0xfa, 0xe9, 0xcf, 0x83, 0x1b, 0x36, 0x6c, 0xd8, 0xad, 0x47, 0x8e, 0x00
 ];
-
+const PATTERNS:Array<Array<number>> = [
+    [2, 1, 2, 2, 2, 2, 0, 0],  // 0
+    [2, 2, 2, 1, 2, 2, 0, 0],  // 1
+    [2, 2, 2, 2, 2, 1, 0, 0],  // 2
+    [1, 2, 1, 2, 2, 3, 0, 0],  // 3
+    [1, 2, 1, 3, 2, 2, 0, 0],  // 4
+    [1, 3, 1, 2, 2, 2, 0, 0],  // 5
+    [1, 2, 2, 2, 1, 3, 0, 0],  // 6
+    [1, 2, 2, 3, 1, 2, 0, 0],  // 7
+    [1, 3, 2, 2, 1, 2, 0, 0],  // 8
+    [2, 2, 1, 2, 1, 3, 0, 0],  // 9
+    [2, 2, 1, 3, 1, 2, 0, 0],  // 10
+    [2, 3, 1, 2, 1, 2, 0, 0],  // 11
+    [1, 1, 2, 2, 3, 2, 0, 0],  // 12
+    [1, 2, 2, 1, 3, 2, 0, 0],  // 13
+    [1, 2, 2, 2, 3, 1, 0, 0],  // 14
+    [1, 1, 3, 2, 2, 2, 0, 0],  // 15
+    [1, 2, 3, 1, 2, 2, 0, 0],  // 16
+    [1, 2, 3, 2, 2, 1, 0, 0],  // 17
+    [2, 2, 3, 2, 1, 1, 0, 0],  // 18
+    [2, 2, 1, 1, 3, 2, 0, 0],  // 19
+    [2, 2, 1, 2, 3, 1, 0, 0],  // 20
+    [2, 1, 3, 2, 1, 2, 0, 0],  // 21
+    [2, 2, 3, 1, 1, 2, 0, 0],  // 22
+    [3, 1, 2, 1, 3, 1, 0, 0],  // 23
+    [3, 1, 1, 2, 2, 2, 0, 0],  // 24
+    [3, 2, 1, 1, 2, 2, 0, 0],  // 25
+    [3, 2, 1, 2, 2, 1, 0, 0],  // 26
+    [3, 1, 2, 2, 1, 2, 0, 0],  // 27
+    [3, 2, 2, 1, 1, 2, 0, 0],  // 28
+    [3, 2, 2, 2, 1, 1, 0, 0],  // 29
+    [2, 1, 2, 1, 2, 3, 0, 0],  // 30
+    [2, 1, 2, 3, 2, 1, 0, 0],  // 31
+    [2, 3, 2, 1, 2, 1, 0, 0],  // 32
+    [1, 1, 1, 3, 2, 3, 0, 0],  // 33
+    [1, 3, 1, 1, 2, 3, 0, 0],  // 34
+    [1, 3, 1, 3, 2, 1, 0, 0],  // 35
+    [1, 1, 2, 3, 1, 3, 0, 0],  // 36
+    [1, 3, 2, 1, 1, 3, 0, 0],  // 37
+    [1, 3, 2, 3, 1, 1, 0, 0],  // 38
+    [2, 1, 1, 3, 1, 3, 0, 0],  // 39
+    [2, 3, 1, 1, 1, 3, 0, 0],  // 40
+    [2, 3, 1, 3, 1, 1, 0, 0],  // 41
+    [1, 1, 2, 1, 3, 3, 0, 0],  // 42
+    [1, 1, 2, 3, 3, 1, 0, 0],  // 43
+    [1, 3, 2, 1, 3, 1, 0, 0],  // 44
+    [1, 1, 3, 1, 2, 3, 0, 0],  // 45
+    [1, 1, 3, 3, 2, 1, 0, 0],  // 46
+    [1, 3, 3, 1, 2, 1, 0, 0],  // 47
+    [3, 1, 3, 1, 2, 1, 0, 0],  // 48
+    [2, 1, 1, 3, 3, 1, 0, 0],  // 49
+    [2, 3, 1, 1, 3, 1, 0, 0],  // 50
+    [2, 1, 3, 1, 1, 3, 0, 0],  // 51
+    [2, 1, 3, 3, 1, 1, 0, 0],  // 52
+    [2, 1, 3, 1, 3, 1, 0, 0],  // 53
+    [3, 1, 1, 1, 2, 3, 0, 0],  // 54
+    [3, 1, 1, 3, 2, 1, 0, 0],  // 55
+    [3, 3, 1, 1, 2, 1, 0, 0],  // 56
+    [3, 1, 2, 1, 1, 3, 0, 0],  // 57
+    [3, 1, 2, 3, 1, 1, 0, 0],  // 58
+    [3, 3, 2, 1, 1, 1, 0, 0],  // 59
+    [3, 1, 4, 1, 1, 1, 0, 0],  // 60
+    [2, 2, 1, 4, 1, 1, 0, 0],  // 61
+    [4, 3, 1, 1, 1, 1, 0, 0],  // 62
+    [1, 1, 1, 2, 2, 4, 0, 0],  // 63
+    [1, 1, 1, 4, 2, 2, 0, 0],  // 64
+    [1, 2, 1, 1, 2, 4, 0, 0],  // 65
+    [1, 2, 1, 4, 2, 1, 0, 0],  // 66
+    [1, 4, 1, 1, 2, 2, 0, 0],  // 67
+    [1, 4, 1, 2, 2, 1, 0, 0],  // 68
+    [1, 1, 2, 2, 1, 4, 0, 0],  // 69
+    [1, 1, 2, 4, 1, 2, 0, 0],  // 70
+    [1, 2, 2, 1, 1, 4, 0, 0],  // 71
+    [1, 2, 2, 4, 1, 1, 0, 0],  // 72
+    [1, 4, 2, 1, 1, 2, 0, 0],  // 73
+    [1, 4, 2, 2, 1, 1, 0, 0],  // 74
+    [2, 4, 1, 2, 1, 1, 0, 0],  // 75
+    [2, 2, 1, 1, 1, 4, 0, 0],  // 76
+    [4, 1, 3, 1, 1, 1, 0, 0],  // 77
+    [2, 4, 1, 1, 1, 2, 0, 0],  // 78
+    [1, 3, 4, 1, 1, 1, 0, 0],  // 79
+    [1, 1, 1, 2, 4, 2, 0, 0],  // 80
+    [1, 2, 1, 1, 4, 2, 0, 0],  // 81
+    [1, 2, 1, 2, 4, 1, 0, 0],  // 82
+    [1, 1, 4, 2, 1, 2, 0, 0],  // 83
+    [1, 2, 4, 1, 1, 2, 0, 0],  // 84
+    [1, 2, 4, 2, 1, 1, 0, 0],  // 85
+    [4, 1, 1, 2, 1, 2, 0, 0],  // 86
+    [4, 2, 1, 1, 1, 2, 0, 0],  // 87
+    [4, 2, 1, 2, 1, 1, 0, 0],  // 88
+    [2, 1, 2, 1, 4, 1, 0, 0],  // 89
+    [2, 1, 4, 1, 2, 1, 0, 0],  // 90
+    [4, 1, 2, 1, 2, 1, 0, 0],  // 91
+    [1, 1, 1, 1, 4, 3, 0, 0],  // 92
+    [1, 1, 1, 3, 4, 1, 0, 0],  // 93
+    [1, 3, 1, 1, 4, 1, 0, 0],  // 94
+    [1, 1, 4, 1, 1, 3, 0, 0],  // 95
+    [1, 1, 4, 3, 1, 1, 0, 0],  // 96
+    [4, 1, 1, 1, 1, 3, 0, 0],  // 97
+    [4, 1, 1, 3, 1, 1, 0, 0],  // 98
+    [1, 1, 3, 1, 4, 1, 0, 0],  // 99
+    [1, 1, 4, 1, 3, 1, 0, 0],  // 100
+    [3, 1, 1, 1, 4, 1, 0, 0],  // 101
+    [4, 1, 1, 1, 3, 1, 0, 0],  // 102
+    [2, 1, 1, 4, 1, 2, 0, 0],  // 103
+    [2, 1, 1, 2, 1, 4, 0, 0],  // 104
+    [2, 1, 1, 2, 3, 2, 0, 0],  // 105
+    [2, 3, 3, 1, 1, 1, 2, 0]   // 106
+]
 // uni-app rpx=>px 默认750
 export const UNIT_CONVERSION = function (num:string | number):number{
 	return uni.upx2px(Number(num));
 }
+export const GetBytes = function (str:string) {
+    const bytes:number[] = [];
+    for (let i = 0; i < str.length; i++) {
+        bytes.push(str.charCodeAt(i));
+    }
+    return bytes;
+}
+export const  CodeSetAllowedFor = function (chr:number) {
+    if (chr >= 48 && chr <= 57) {
+        return CODESET.ANY;
+    }
+    else if (chr >= 32 && chr <= 95) {
+        return CODESET.AB;
+    }
+    else {
+        return chr < 32 ? CODESET.A : CODESET.B;
+    }
+}
+interface  BarcOpt {
+    currcs: number,
+}
+export const StringToCode128 = function (code:string):number[] {
+    let barc: BarcOpt = {
+        currcs: CODESET.C
+    };
+    let bytes = GetBytes(code);
+    let index = bytes[0] == CHAR_TILDE ? 1 : 0;
+
+    const perhapsCodeC = function (bytes: number[], codeset: number): number {
+        for (let i = 0; i < bytes.length; i++) {
+            const b = bytes[i]
+            if ((b < 48 || b > 57) && b != CHAR_TILDE)
+                return codeset;
+        }
+        return CODESET.C;
+    }
+    const codesForChar = function (chr1: number, chr2: number, currcs: number): number[] {
+        let result:number[] = [];
+        let shifter = -1;
+        if (charCompatible(chr1, currcs)) {
+            if (currcs == CODESET.C) {
+                if (chr2 == -1) {
+                    shifter = SET_CODEB;
+                    currcs = CODESET.B;
+                }
+                else if ((chr2 != -1) && !charCompatible(chr2, currcs)) {
+                    if (charCompatible(chr2, CODESET.A)) {
+                        shifter = SET_CODEA;
+                        currcs = CODESET.A;
+                    }
+                    else {
+                        shifter = SET_CODEB;
+                        currcs = CODESET.B;
+                    }
+                }
+            }
+        }
+        else {
+            if ((chr2 != -1) && !charCompatible(chr2, currcs)) {
+                switch (currcs) {
+                    case CODESET.A:
+                        shifter = SET_CODEB;
+                        currcs = CODESET.B;
+                        break;
+                    case CODESET.B:
+                        shifter = SET_CODEA;
+                        currcs = CODESET.A;
+                        break;
+                }
+            }
+            else {
+                shifter = SET_SHIFT;
+            }
+        }
+        if (shifter != -1) {
+            result.push(shifter);
+            result.push(codeValue(chr2));
+        }
+        else {
+            if (currcs == CODESET.C) {
+                result.push(codeValue(chr1, chr2));
+            }
+            else {
+                result.push(codeValue(chr1));
+            }
+        }
+        barc.currcs = currcs;
+
+        return result;
+    }
+    const csa1 = bytes.length > 0 ? CodeSetAllowedFor(bytes[index++]) : CODESET.AB;
+    const csa2 = bytes.length > 0 ? CodeSetAllowedFor(bytes[index++]) : CODESET.AB;
+    barc.currcs = getBestStartSet(csa1, csa2);
+    barc.currcs = perhapsCodeC(bytes, barc.currcs);
+    let codes:number[] = [];
+
+    switch (barc.currcs) {
+        case CODESET.A:
+            codes.push(SET_STARTA);
+            break;
+        case CODESET.B:
+            codes.push(SET_STARTB);
+            break;
+        default:
+            codes.push(SET_STARTC);
+            break;
+    }
+    for (let i = 0; i < bytes.length; i++) {
+        let b1 = bytes[i];
+        if (b1 in REPLACE_CODES) {
+            codes.push(REPLACE_CODES[b1]);
+            i++;
+            b1 = bytes[i];
+        }
+        const b2 = bytes.length > (i + 1) ? bytes[i + 1] : -1;
+        codes = codes.concat(codesForChar(b1, b2, barc.currcs));
+
+        if (barc.currcs == CODESET.C) i++;
+    }
+    let checksum = codes[0];
+    for (let weight = 1; weight < codes.length; weight++) {
+        checksum += (weight * codes[weight]);
+    }
+    codes.push(checksum % 103);
+    codes.push(SET_STOP);
+    return codes;
+}
+
+export const getBestStartSet = function (csa1:number, csa2:number): number {
+    let vote = 0;
+    vote += csa1 == CODESET.A ? 1 : 0;
+    vote += csa1 == CODESET.B ? -1 : 0;
+    vote += csa2 == CODESET.A ? 1 : 0;
+    vote += csa2 == CODESET.B ? -1 : 0;
+    return vote > 0 ? CODESET.A : CODESET.B;
+}
+export const codeValue = function (chr1: number, chr2?: number): number {
+    if (typeof chr2 == "undefined") {
+        return chr1 >= 32 ? chr1 - 32 : chr1 + 64;
+    }
+    else {
+        return parseInt(String.fromCharCode(chr1) + String.fromCharCode(chr2));
+    }
+}
+
+export const charCompatible = function (chr: number, codeset: number): boolean {
+    let csa = codeSetAllowedFor(chr);
+    if (csa == CODESET.ANY) return true;
+    if (csa == CODESET.AB) return true;
+    if (csa == CODESET.A && codeset == CODESET.A) return true;
+    if (csa == CODESET.B && codeset == CODESET.B) return true;
+    return false;
+}
+
+export const codeSetAllowedFor = function (chr: number):number {
+    if (chr >= 48 && chr <= 57) {
+        return CODESET.ANY;
+    }
+    else if (chr >= 32 && chr <= 95) {
+        return CODESET.AB;
+    }
+    else {
+        return chr < 32 ? CODESET.A : CODESET.B;
+    }
+}
+
+//定义条形码参数
+interface OperationCodePars {
+    id: string|object,
+    width: number,
+    height: number,
+    code: string,
+    bgColor: string,
+    color: string[]
+    ctx?: object
+}
+
+// 条形码
+export const OperationCode = function (opt:OperationCodePars) {
+
+    let CTXC: string | object;
+    if (Object.prototype.toString.call(opt.id) == '[object String]') {
+        CTXC = uni.createCanvasContext(<string>opt.id, opt.ctx || null);
+    } else if (Object.prototype.toString.call(opt.id) == '[object Object]') {
+        CTXC = opt.id;
+    } else {
+        console.warn("没有找到条形码canvas id或者实列!");
+        return
+    }
+    if (!opt.code) {
+        console.warn("没有找到条形码code");
+        return
+    }
+    
+    const width: number = UNIT_CONVERSION(opt.width);
+    const height: number = UNIT_CONVERSION(opt.height);
+    const code: number[] = StringToCode128(opt.code);
+
+    let gc = new GraphicContent(CTXC, width, height,opt.color || "#000000",opt.bgColor || "#ffffff");
+}
+class GraphicContent {
+    width: number;
+    height:number;
+    quiet: number;
+    borderSize: number = 0;
+    paddingWidth: number = 0;
+    ctx: object;
+    color: string;
+    backGroud: string;
+    area: object;
+
+    constructor (ctx: object,width:number,height:number,color:string,backGroud:string) {
+        this.ctx = ctx;
+        this.width = width;
+        this.height = height;
+        this.quiet = Math.round(this.width / 40);
+        this.color = color;
+        this.backGroud = backGroud;
+        this.area = {
+            width : width - this.paddingWidth * 2 - this.quiet * 2,
+            height: height - this.borderSize * 2,
+            top   : this.borderSize - 4,
+            left  : this.borderSize + this.quiet
+        };
+    }
+    fillFgRect(ctx:object, width:number, height:number, color:string) {
+		this.FILLRECT(ctx, width, height, color, this.color);
+	};
+	fillBgRect(ctx:object, width:number, height:number, color:string) {
+		this.FILLRECT(ctx, width, height, color, this.backGroud);
+	};
+	FILLRECT(ctx:object, width:number, height:number, color:string, backGroud:string) {
+		this.ctx.setFillStyle(backGroud);
+		this.ctx.fillRect(ctx, width, height, color);
+	}
+}
+
 
 // 汉字编码
 export const UtF16TO8 = function (code:string):string{
@@ -129,7 +505,7 @@ export const SaveImg = function(k:SaveCanvasPars):object{
                 }
             }, k.ctx)
         } else if (Object.prototype.toString.call(k.id) == '[object Object]') {
-            const ctx = k.id;
+            // const ctx = k.id as CanvasToTempFilePathOptions;
             // ctx.toTempFilePath(0, 0, width, height, width, height, k.type || 'png', 1,(res: unknown)=> {
             //     resolve(res)
             // })
@@ -156,8 +532,8 @@ interface BarCodePars {
 
 
 // }
-class BarCode {
-    strinbuf: number[] = [];
+class WidgetCode {
+    strinbuf: string[] = [];
     eccbuf: number[] = [];
     qrframe: number[] = [];
     framask: number[] = [];
@@ -216,18 +592,23 @@ class BarCode {
         return x;
     }
     appendrs (data:number, dlen:number, ecbuf:number, eclen:number) {
-        let i, j, fb;
-
-        for (i = 0; i < eclen; i++)
-            this.strinbuf[ecbuf + i] = 0;
-        for (i = 0; i < dlen; i++) {
-            fb = glog[this.strinbuf[data + i] ^ this.strinbuf[ecbuf]];
-            if (fb != 255)     /* fb term is non-zero */
-                for (j = 1; j < eclen; j++)
+        let fb:number;
+        for (let i = 0; i < eclen; i++){
+            this.strinbuf[0] = '0';
+        }
+        for (let i = 0; i < dlen; i++) {
+            const a:string = this.strinbuf[data + i];
+            const b:string = this.strinbuf[ecbuf];
+            fb = glog[a ^ b];
+            if (fb != 255){
+                for (let j = 1; j < eclen; j++){
                     this.strinbuf[ecbuf + j - 1] = this.strinbuf[ecbuf + j] ^ gexp[this.modnn(fb + this.genpoly[eclen - j])];
-            else
-                for( j = ecbuf ; j < ecbuf + eclen; j++ )
+                }
+            }else{
+                for( let j = ecbuf ; j < ecbuf + eclen; j++ ){
                     this.strinbuf[j] = this.strinbuf[j + 1];
+                }
+            }
             this.strinbuf[ ecbuf + eclen - 1] = fb == 255 ? 0 : gexp[this.modnn(fb + this.genpoly[0])];
         }
     }
@@ -261,8 +642,10 @@ class BarCode {
                 runsbad += this.N3;
         return runsbad;
     }
+    toNum (num:number) {
+        return  num > 0 ? 0 : 1
+    }
     applymask (m:number) {
-        var x, y, r3x, r3y;
         switch (m) {
         case 0:
             for (let y = 0; y < this.width; y++)
@@ -277,7 +660,7 @@ class BarCode {
                         this.qrframe[x + y * this.width] ^= 1;
             break;
         case 2:
-            for (let y = 0; y <this. width; y++)
+            for (let y = 0; y <this.width; y++)
                 for (let r3x = 0, x = 0; x < this.width; x++, r3x++) {
                     if (r3x == 3)
                         r3x = 0;
@@ -302,7 +685,8 @@ class BarCode {
                 for (let r3x = 0, r3y = ((y >> 1) & 1), x = 0; x < this.width; x++, r3x++) {
                     if (r3x == 3) {
                         r3x = 0;
-                        r3y = !r3y;
+                        // r3y = !r3y;
+                        r3y = r3y > 0  ? 0 : 1;
                     }
                     if (!r3y && !this.ismasked(x, y))
                         this.qrframe[x + y * this.width] ^= 1;
@@ -315,7 +699,7 @@ class BarCode {
                 for (let r3x = 0, x = 0; x < this.width; x++, r3x++) {
                     if (r3x == 3)
                         r3x = 0;
-                    if (!((x & y & 1) + !(!r3x | !r3y)) && !this.ismasked(x, y))
+                    if (!((x & y & 1) + this.toNum((this.toNum(r3x) | this.toNum(r3y)))) && !this.ismasked(x, y))
                         this.qrframe[x + y * this.width] ^= 1;
                 }
             }
@@ -327,7 +711,7 @@ class BarCode {
                 for (let r3x = 0, x = 0; x < this.width; x++, r3x++) {
                     if (r3x == 3)
                         r3x = 0;
-                    if (!(((x & y & 1) + (r3x && (r3x == r3y))) & 1) && !this.ismasked(x, y))
+                    if (!(((x & y & 1) + (r3x && (r3x == r3y ? 1 : 0))) & 1) && !this.ismasked(x, y))
                         this.qrframe[x + y * this.width] ^= 1;
                 }
             }
@@ -339,7 +723,7 @@ class BarCode {
                 for (let r3x = 0, x = 0; x < this.width; x++, r3x++) {
                     if (r3x == 3)
                         r3x = 0;
-                    if (!(((r3x && (r3x == r3y)) + ((x + y) & 1)) & 1) && !this.ismasked(x, y))
+                    if (!(((r3x && (r3x == r3y ? 1 : 0)) + ((x + y) & 1)) & 1) && !this.ismasked(x, y))
                         this.qrframe[x + y * this.width] ^= 1;
                 }
             }
@@ -363,17 +747,16 @@ class BarCode {
             this.neccblk2 = eccblocks[k++];
             this.datablkw = eccblocks[k++];
             this.eccblkwid = eccblocks[k];
-            k = this.datablkw * (this.neccblk1 + this.neccblk2) + this.neccblk2 - 3 + (version <= 9);
+            k = this.datablkw * (this.neccblk1 + this.neccblk2) + this.neccblk2 - 3 + (version <= 9 ? 1 : 0);
             if (t <= k)
                 break;
         } while (version < 40);
         this.width = 17 + 4 * version;
 
-
         v = this.datablkw + (this.datablkw + this.eccblkwid) * (this.neccblk1 + this.neccblk2) + this.neccblk2;
         for( let t = 0; t < v; t++ )
             this.eccbuf[t] = 0;
-        this.strinbuf = instring.slice(0);
+        this.strinbuf = [...instring];
 
         for( let t = 0; t < this.width * this.width; t++ )
             this.qrframe[t] = 0;
@@ -489,8 +872,8 @@ class BarCode {
 
         i = v;
         if (version > 9) {
-            this.strinbuf[i + 2] = 0;
-            this.strinbuf[i + 3] = 0;
+            this.strinbuf[i + 2] = '0';
+            this.strinbuf[i + 3] = '0';
             while (i--) {
                 t = this.strinbuf[i];
                 this.strinbuf[i + 3] |= 255 & (t << 4);
@@ -512,7 +895,7 @@ class BarCode {
             this.strinbuf[0] = 0x40 | (v >> 4);
         }
 
-        i = v + 3 - (version < 10);
+        i = v + 3 - (Number(version) < 10);
         while (i < x) {
             this.strinbuf[i++] = 0xec;
 

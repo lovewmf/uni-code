@@ -5,6 +5,7 @@
         // "sourceMap": false, // 是否生成sourceMap
         "target": "esnext", // 编译目标
         "module": "esnext", // 模块类型
+        "suppressImplicitAnyIndexErrors": true,
         // "moduleResolution": "node",
         // "allowUnreachableCode": true, // 不报告执行不到的代码错误。
         // "allowUnusedLabels": false,    // 不报告未使用的标签错误
