@@ -218,9 +218,42 @@ const PATTERNS:Array<Array<number>> = [
     [2, 1, 1, 2, 3, 2, 0, 0],  // 105
     [2, 3, 3, 1, 1, 1, 2, 0]   // 106
 ]
-// uni-app rpx=>px 默认750
+
+/**
+ * @author wmf❤洛尘
+ * @method UNIT_CONVERSION
+ * @description UniApp rpx ——> px 默认750
+ * @param num 
+ * @returns 转换后的像素
+ */
 export const UNIT_CONVERSION = function (num:string | number):number{
 	return uni.upx2px(Number(num));
+}
+
+/**
+ * @author wmf❤洛尘
+ * @method UtF16TO8
+ * @description 汉字编码
+ * @param code 
+ * @returns 编码后的字符串
+ */
+ export const UtF16TO8 = function (code:string):string{
+    let out:string = '';
+    let c:number = 0;
+	for (let i = 0; i < code.length; i++) {
+		c = code.charCodeAt(i);
+		if ((c >= 0x0001) && (c <= 0x007F)) {
+			out += code.charAt(i);
+		} else if (c > 0x07FF) {
+			out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F));
+			out += String.fromCharCode(0x80 | ((c >> 6) & 0x3F));
+			out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
+		} else {
+			out += String.fromCharCode(0xC0 | ((c >> 6) & 0x1F));
+			out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
+		}
+	}
+	return out;
 }
 export const GetBytes = function (str:string) {
     const bytes:number[] = [];
@@ -403,9 +436,9 @@ interface OperationCodePars {
 * @method OperationCode 创建条形码
 * @description 使用与UniApp的条形码
 */
-export const OperationCode = function (opt:OperationCodePars) {
+export const OperationCode = function (opt:OperationCodePars,callback?:void) {
 
-    let CTX:  any;
+    let CTX: any;
     if (Object.prototype.toString.call(opt.id) == '[object String]') {
         CTX = uni.createCanvasContext(<string>opt.id, opt.ctx || null);
     } else if (Object.prototype.toString.call(opt.id) == '[object Object]') {
@@ -442,9 +475,9 @@ export const OperationCode = function (opt:OperationCodePars) {
             x += barW + spcW;
         }
     }
-    // CTX.draw(false,(res)=>{
-
-    // });
+    CTX.draw(false,(res)=>{
+        // callback({})
+    });
 }
 interface areaPars {
     width: number,
@@ -493,26 +526,6 @@ class GraphicContent {
     // fill background
 }
 
-
-// 汉字编码
-export const UtF16TO8 = function (code:string):string{
-    let out:string = '';
-    let c:number = 0;
-	for (let i = 0; i < code.length; i++) {
-		c = code.charCodeAt(i);
-		if ((c >= 0x0001) && (c <= 0x007F)) {
-			out += code.charAt(i);
-		} else if (c > 0x07FF) {
-			out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F));
-			out += String.fromCharCode(0x80 | ((c >> 6) & 0x3F));
-			out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
-		} else {
-			out += String.fromCharCode(0xC0 | ((c >> 6) & 0x1F));
-			out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
-		}
-	}
-	return out;
-}
 interface SaveCanvasPars {
     id: string|object,
     type: string,
