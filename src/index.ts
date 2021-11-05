@@ -402,7 +402,7 @@ interface OperationCodePars {
 // 条形码
 export const OperationCode = function (opt:OperationCodePars) {
 
-    let CTXC: string | object;
+    let CTXC:  UniApp.CanvasContex;
     if (Object.prototype.toString.call(opt.id) == '[object String]') {
         CTXC = uni.createCanvasContext(<string>opt.id, opt.ctx || null);
     } else if (Object.prototype.toString.call(opt.id) == '[object Object]') {
