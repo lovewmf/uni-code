@@ -6,8 +6,6 @@ import {
     adelta
 } from '../common/support'
 
-
-
 /**
 * @description 定义二维码参数
 */
@@ -28,7 +26,7 @@ interface BarCodePars {
 
 // }
 export class WidgetCode {
-    strinbuf: string[] = [];
+    strinbuf: Array<string|number> = [];
     eccbuf: number[] = [];
     qrframe: number[] = [];
     framask: number[] = [];
@@ -89,11 +87,11 @@ export class WidgetCode {
     appendrs (data:number, dlen:number, ecbuf:number, eclen:number) {
         let fb:number;
         for (let i = 0; i < eclen; i++){
-            this.strinbuf[0] = '0';
+            this.strinbuf[0] = 0;
         }
         for (let i = 0; i < dlen; i++) {
-            const a:string = this.strinbuf[data + i];
-            const b:string = this.strinbuf[ecbuf];
+            const a: string = this.strinbuf[data + i];
+            const b: string = this.strinbuf[ecbuf];
             fb = glog[a ^ b];
             if (fb != 255){
                 for (let j = 1; j < eclen; j++){
@@ -138,7 +136,7 @@ export class WidgetCode {
         return runsbad;
     }
     toNum (num:number) {
-        return  num > 0 ? 0 : 1
+        return  num === 0 ? 1 : 0
     }
     applymask (m:number) {
         switch (m) {
@@ -353,9 +351,10 @@ export class WidgetCode {
                     this.setmask(x, y);
 
         v = this.strinbuf.length;
-
+        // const a:string = "https://www.badi"
+        // console.log(a[0].charCodeAt(0))
         for( let i = 0 ; i < v; i++ )
-            this.eccbuf[i] = this.strinbuf.charCodeAt(i);
+            this.eccbuf[i] = this.strinbuf.toString().charCodeAt(i);
         this.strinbuf = this.eccbuf.slice(0);
 
         let x = this.datablkw * (this.neccblk1 + this.neccblk2) + this.neccblk2;
@@ -367,12 +366,12 @@ export class WidgetCode {
 
         i = v;
         if (version > 9) {
-            this.strinbuf[i + 2] = '0';
-            this.strinbuf[i + 3] = '0';
+            this.strinbuf[i + 2] = 0;
+            this.strinbuf[i + 3] = 0;
             while (i--) {
                 t = this.strinbuf[i];
-                this.strinbuf[i + 3] |= 255 & (t << 4);
-                this.strinbuf[i + 2] = t >> 4;
+                this.strinbuf[i + 3] |= 255 & (t as number << 4);
+                this.strinbuf[i + 2] = t as number >> 4;
             }
             this.strinbuf[2] |= 255 & (v << 4);
             this.strinbuf[1] = v >> 4;
@@ -383,7 +382,7 @@ export class WidgetCode {
             this.strinbuf[i + 2] = 0;
             while (i--) {
                 t = this.strinbuf[i];
-                this.strinbuf[i + 2] |= 255 & (t << 4);
+                this.strinbuf[i + 2] |= 255 & (t as number << 4);
                 this.strinbuf[i + 1] = t >> 4;
             }
             this.strinbuf[1] |= 255 & (v << 4);
@@ -453,7 +452,7 @@ export class WidgetCode {
                                 y--;
                             else {
                                 x -= 2;
-                                k = !k;
+                                k =  (k === 0 ? 1 : 0);
                                 if (x == 6) {
                                     x--;
                                     y = 9;
@@ -465,7 +464,7 @@ export class WidgetCode {
                                 y++;
                             else {
                                 x -= 2;
-                                k = !k;
+                                k = (k === 0 ? 1: 0);
                                 if (x == 6) {
                                     x--;
                                     y -= 8;
@@ -473,7 +472,7 @@ export class WidgetCode {
                             }
                         }
                     }
-                    v = !v;
+                    v = (v >0 ? 0 : 1);
                 } while (this.ismasked(x, y));
             }
         }
