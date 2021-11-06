@@ -51,7 +51,7 @@ export const BarCodeCanvas = function (opt:OperationCodePars, ctx:UniApp.CanvasC
         const c = CodeNum[i];
         for (let bar = 0; bar < 8; bar += 2) {
             const barW = PATTERNS[c][bar] * barWeight;
-            // var barH = height - y - this.border;
+            // const barH = height - y - this.border;
             const barH = height - y;
             const spcW = PATTERNS[c][bar + 1] * barWeight;
             if (barW > 0) {

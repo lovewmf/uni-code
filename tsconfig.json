@@ -6,14 +6,12 @@
         "target": "esnext", // 编译目标
         "module": "esnext", // 模块类型
         "suppressImplicitAnyIndexErrors": true,
-        // "moduleResolution": "node",
-        // "allowUnreachableCode": true, // 不报告执行不到的代码错误。
-        // "allowUnusedLabels": false,    // 不报告未使用的标签错误
+        "moduleResolution": "node",
+        "allowUnreachableCode": true, // 不报告执行不到的代码错误。
         "allowJs": false, // 是否编辑js文件
         "strict": true, // 严格模式
         "noUnusedLocals": true, // 未使用变量报错
         "experimentalDecorators": true, // 启动装饰器
-        "resolveJsonModule": true, // 加载json
         "esModuleInterop": true, 
         "removeComments": true, // 删除注释
         //"declaration": true, // 生成定义文件
