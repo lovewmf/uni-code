@@ -6,7 +6,7 @@ import {
 
 //定义条形码参数
 interface OperationCodePars {
-    id: string|object,
+    id: string | UniApp.CanvasContext,
     width: number,
     height: number,
     code: string,
@@ -33,8 +33,9 @@ export const OperationCode = function (opt:OperationCodePars, callback?:void) {
     if (Object.prototype.toString.call(opt.id) == '[object String]') {
         CTX = uni.createCanvasContext(<string>opt.id, opt.ctx || null);
         BarCodeCanvas(opt, CTX, callback)
-    } else if (Object.prototype.toString.call(opt.id) == '[object Object]') {
-        // CTX = opt.id;
+    } else if (Object.prototype.toString.call(opt.id) == '[object Object]') {//在此兼容nvue
+        CTX = opt.id as UniApp.CanvasContext;
+        BarCodeCanvas(opt, CTX, callback)
     }
 }
 export const BarCodeCanvas = function (opt:OperationCodePars, ctx:UniApp.CanvasContext, callback?:void) {
@@ -60,7 +61,9 @@ export const BarCodeCanvas = function (opt:OperationCodePars, ctx:UniApp.CanvasC
             x += barW + spcW;
         }
     }
-    ctx.draw(false);
+    ctx.draw(false,(res) => {
+
+    });
 }
 interface areaPars {
     width: number,
