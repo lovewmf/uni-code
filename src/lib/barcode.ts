@@ -20,7 +20,7 @@ interface OperationCodePars {
 * @method OperationCode 创建条形码
 * @description 使用与UniApp的条形码
 */
-export const OperationCode = function (opt:OperationCodePars,callback?:void) {
+export const OperationCode = function (opt:OperationCodePars, callback?:void) {
     if (!opt.code) {
         console.warn("没有找到条形码code");
         return
@@ -32,12 +32,12 @@ export const OperationCode = function (opt:OperationCodePars,callback?:void) {
     let CTX: UniApp.CanvasContext;
     if (Object.prototype.toString.call(opt.id) == '[object String]') {
         CTX = uni.createCanvasContext(<string>opt.id, opt.ctx || null);
-        aa(opt, CTX, callback)
+        BarCodeCanvas(opt, CTX, callback)
     } else if (Object.prototype.toString.call(opt.id) == '[object Object]') {
         // CTX = opt.id;
     }
 }
-export const aa = function (opt:OperationCodePars,ctx:UniApp.CanvasContext,callback?:void) {
+export const BarCodeCanvas = function (opt:OperationCodePars, ctx:UniApp.CanvasContext, callback?:void) {
     const width: number = UNIT_CONVERSION(opt.width);
     const height: number = UNIT_CONVERSION(opt.height);
     const CodeNum: number[] = StringToCode128(opt.code);

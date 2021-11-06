@@ -27,7 +27,7 @@ interface BarCodePars {
 
 
 // }
-class WidgetCode {
+export class WidgetCode {
     strinbuf: string[] = [];
     eccbuf: number[] = [];
     qrframe: number[] = [];
