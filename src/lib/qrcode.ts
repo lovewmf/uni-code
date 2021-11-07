@@ -123,9 +123,7 @@ class QRCodeInit {
             this.strinbuf[0] = 0;
         }
         for (let i = 0; i < dlen; i++) {
-            const a: string = this.strinbuf[data + i];
-            const b: string = this.strinbuf[ecbuf];
-            fb = glog[a ^ b];
+            fb = glog[this.strinbuf[data + i] ^ this.strinbuf[ecbuf]];
             if (fb != 255){
                 for (let j = 1; j < eclen; j++){
                     this.strinbuf[ecbuf + j - 1] = this.strinbuf[ecbuf + j] ^ gexp[this.modnn(fb + this.genpoly[eclen - j])];
