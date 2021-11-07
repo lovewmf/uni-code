@@ -3,30 +3,48 @@ import {
     glog,
     eccblocks,
     vpat,
-    adelta
+    fmtword,
+    adelta,
+    UNIT_CONVERSION,
+    UtF16TO8,
+    SaveCodeImg
 } from '../common/support'
 
 /**
 * @description 定义二维码参数
 */
 interface BarCodePars {
-    id: string|object,
-    width: string|number,
-    height: string|number,
-    code: string,
-    bgColor: string,
-    color: string[]
-    ctx: object
+    id: string | UniApp.CanvasContext,
+    size: string | number, //二维码大小
+    code: string, //二维码的code
+    bgColor?: string, // 二维码背景色 默认 #FFFFFF
+    color?: string[], // 生产的二维码颜色多个颜色渐变
+    img?: string, //二维码log
+    iconSize?: number,
+    ctx: object // 自定义组组件 需要传上下文this
 }
-// export const BarCode = function(opt: BarCodePars,callback?: void){
-//     let [strinbuf,eccbuf,qrframe,framask,rlens] = [[],[],[],[],[]];
-//     let [version, width, neccblk1, neccblk2, datablkw, eccblkwid] = ['','','','','','']
-//     let ecclevel:number = 2;
+export const WidgetCode = function(opt: BarCodePars,callback?: void){
+    if (!opt.code) {
+        console.warn("没有找到二维码code");
+        return
+    }
+    if (!opt.id){
+        console.warn("没有找到二维码canvas id或者实列!");
+        return
+    }
+    let CTX: UniApp.CanvasContext;
+    const BARCODE = new QRCodeInit()
+    if (Object.prototype.toString.call(opt.id) == '[object String]') {
+        CTX = uni.createCanvasContext(<string>opt.id, opt.ctx || null);
+        BARCODE.RepaintCanvas(opt, CTX, callback)
+    } else if (Object.prototype.toString.call(opt.id) == '[object Object]') {//在此兼容nvue
+        CTX = opt.id as UniApp.CanvasContext;
+        BARCODE.RepaintCanvas(opt, CTX, callback)
+    }
 
-
-// }
-export class WidgetCode {
-    strinbuf: Array<string|number> = [];
+}
+class QRCodeInit {
+    strinbuf: number[] = [];
     eccbuf: number[] = [];
     qrframe: number[] = [];
     framask: number[] = [];
@@ -46,6 +64,21 @@ export class WidgetCode {
     datablkw: number = 0;
     eccblkwid: number = 0;
 
+    RepaintCanvas (opt:BarCodePars, ctx:UniApp.CanvasContext, callback?:void) {
+        const CODE: string = UtF16TO8(opt.code)
+        const SIZE: number = UNIT_CONVERSION(opt.size)
+
+        ctx.clearRect(0, 0, SIZE, SIZE);
+		ctx.setFillStyle(opt.bgColor || '#FFFFFF');
+		ctx.fillRect(0, 0, SIZE, SIZE);
+        if (opt.color) {// 如果存在颜色
+            let V = ctx.createLinearGradient(0, 0, SIZE, 0);
+            // V.addColorStop(0, S[0]);
+			// V.addColorStop(1, S[1]);
+			ctx.setFillStyle(V)
+        }
+
+    }
     setmask(x:number,y:number){
         let bt = null;
         if (x > y) {
@@ -224,9 +257,9 @@ export class WidgetCode {
         }
         return;
     }
-    genframe (instring: string) {
+    genframe (code: string) {
         // var x j;
-        let t: number = instring.length;
+        let t: number = code.length;
         let k:number = 0;
         let y: number = 0;
         let v: number = 0;
@@ -247,15 +280,17 @@ export class WidgetCode {
         this.width = 17 + 4 * version;
 
         v = this.datablkw + (this.datablkw + this.eccblkwid) * (this.neccblk1 + this.neccblk2) + this.neccblk2;
-        for( let t = 0; t < v; t++ )
+        for( let t = 0; t < v; t++ ){
             this.eccbuf[t] = 0;
-        this.strinbuf = [...instring];
+        }
+        let CODES:string = code.slice(0);
 
-        for( let t = 0; t < this.width * this.width; t++ )
+        for( let t = 0; t < this.width * this.width; t++ ){
             this.qrframe[t] = 0;
-
-        for( let t = 0 ; t < (this.width * (this.width + 1) + 1) / 2; t++)
+        }
+        for( let t = 0 ; t < (this.width * (this.width + 1) + 1) / 2; t++){
             this.framask[t] = 0;
+        }
         for (let t = 0; t < 3; t++) {
             k = 0;
             y = 0;
@@ -345,25 +380,25 @@ export class WidgetCode {
                 this.setmask(2 - y + this.width - 11, 5 - x);
             }
         }
-        for (y = 0; y < this.width; y++)
-            for (let x = 0; x <= y; x++)
-                if (this.qrframe[x + this.width * y])
+        for (y = 0; y < this.width; y++){
+            for (let x = 0; x <= y; x++){
+                if (this.qrframe[x + this.width * y]){
                     this.setmask(x, y);
-
-        v = this.strinbuf.length;
-        // const a:string = "https://www.badi"
-        // console.log(a[0].charCodeAt(0))
-        for( let i = 0 ; i < v; i++ )
-            this.eccbuf[i] = this.strinbuf.toString().charCodeAt(i);
+                }
+            }
+        }
+        v = CODES.length;
+        for( let i = 0 ; i < v; i++ ){
+            this.eccbuf[i] = CODES.toString().charCodeAt(i);
+        }
         this.strinbuf = this.eccbuf.slice(0);
-
         let x = this.datablkw * (this.neccblk1 + this.neccblk2) + this.neccblk2;
         if (v >= x - 2) {
             v = x - 2;
-            if (version > 9)
+            if (version > 9){
                 v--;
+            }
         }
-
         i = v;
         if (version > 9) {
             this.strinbuf[i + 2] = 0;
@@ -389,7 +424,8 @@ export class WidgetCode {
             this.strinbuf[0] = 0x40 | (v >> 4);
         }
 
-        i = v + 3 - (Number(version) < 10);
+        // i = v + 3 - (version < 10);
+        i = v + 3 - (version < 10 ? 1 : 0);
         while (i < x) {
             this.strinbuf[i++] = 0xec;
 
@@ -398,14 +434,14 @@ export class WidgetCode {
         this.genpoly[0] = 1;
         for (i = 0; i < this.eccblkwid; i++) {
             this.genpoly[i + 1] = 1;
-            for (let j = i; j > 0; j--)
-                this.genpoly[j] = this.genpoly[j]
-                ? this.genpoly[j - 1] ^ gexp[this.modnn(glog[this.genpoly[j]] + i)] : this.genpoly[j - 1];
+            for (let j = i; j > 0; j--){
+                this.genpoly[j] = this.genpoly[j] ? this.genpoly[j - 1] ^ gexp[this.modnn(glog[this.genpoly[j]] + i)] : this.genpoly[j - 1];
+            }
             this.genpoly[0] = gexp[this.modnn(glog[this.genpoly[0]] + i)];
         }
-        for (i = 0; i <= this.eccblkwid; i++)
+        for (i = 0; i <= this.eccblkwid; i++){
             this.genpoly[i] = glog[this.genpoly[i]];
-
+        }
         k = x;
         y = 0;
         for (i = 0; i < this.neccblk1; i++) {
@@ -421,17 +457,22 @@ export class WidgetCode {
 
         y = 0;
         for (let i = 0; i < this.datablkw; i++) {
-            for (let j = 0; j < this.neccblk1; j++)
+            for (let j = 0; j < this.neccblk1; j++){
                 this.eccbuf[y++] = this.strinbuf[i + j * this.datablkw];
-            for (let j = 0; j < this.neccblk2; j++)
+            }
+            for (let j = 0; j < this.neccblk2; j++){
                 this.eccbuf[y++] = this.strinbuf[(this.neccblk1 * this.datablkw) + i + (j * (this.datablkw + 1))];
+            }
         }
-        for (let j = 0; j < this.neccblk2; j++)
+        for (let j = 0; j < this.neccblk2; j++){
             this.eccbuf[y++] = this.strinbuf[(this.neccblk1 * this.datablkw) + i + (j * (this.datablkw + 1))];
-        for (let i = 0; i < this.eccblkwid; i++)
-            for (let j = 0; j < this.neccblk1 + this.neccblk2; j++)
-            this.eccbuf[y++] = this.strinbuf[x + i + j * this.eccblkwid];
+        }
+        for (let i = 0; i < this.eccblkwid; i++){
+            for (let j = 0; j < this.neccblk1 + this.neccblk2; j++){
+                this.eccbuf[y++] = this.strinbuf[x + i + j * this.eccblkwid];
+            }
             this.strinbuf = this.eccbuf;
+        }
 
         x = y = this.width - 1;
         k = v = 1;
@@ -440,8 +481,9 @@ export class WidgetCode {
         for (let i = 0; i < m; i++) {
             t = this.strinbuf[i];
             for (let j = 0; j < 8; j++, t <<= 1) {
-                if (0x80 & t)
-                this.qrframe[x + this.width * y] = 1;
+                if (0x80 & t){
+                    this.qrframe[x + this.width * y] = 1;
+                }
                 do {
                     if (v)
                         x--;
@@ -564,7 +606,4 @@ export class WidgetCode {
         }
         return thisbad;
     }
-
-
-    
 }
