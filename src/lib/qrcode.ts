@@ -38,7 +38,7 @@ export const WidgetCode = function(opt: BarCodePars,method?: Function){
         return
     }
     let CTX: UniApp.CanvasContext;
-    const BARCODE = new QRCodeInit()
+    const BARCODE = new QRCodeInit();
     if (Object.prototype.toString.call(opt.id) == '[object String]') {
         CTX = uni.createCanvasContext(<string>opt.id, opt.ctx || null);
         BARCODE.RepaintCanvas(opt, CTX, method)
@@ -69,7 +69,7 @@ class QRCodeInit {
     private eccblkwid: number = 0;
 
     public RepaintCanvas (opt:BarCodePars, ctx:UniApp.CanvasContext, method?:Function) {
-        
+
         const CODE: string = UtF16TO8(opt.code)//转码
         const frame = this.Genframe(CODE)
         const SIZE: number = UNIT_CONVERSION(opt.size)
@@ -108,28 +108,30 @@ class QRCodeInit {
     }
     // 设置二维码颜色
     private SetColorCode (ctx:UniApp.CanvasContext,size:number,color:string[]) {
-        let V = ctx.createLinearGradient(0, 0, size, 0);
+        let Gradient = ctx.createLinearGradient(0, 0, size, 0);
         color.forEach((item)=>{
 
         })
         // V.addColorStop(0, S[0]);
 		// V.addColorStop(1, S[1]);
-		ctx.setFillStyle(V)
+		ctx.setFillStyle(Gradient)
     }
     // 设置二维码log
     private SetImageCode (ctx:UniApp.CanvasContext,size:number,iconSize?:number ,img?:string) {
         let width =  Number(((size - (iconSize || 30)) / 2).toFixed(2));
-        ctx.drawImage(img || '', 0, 0, width, width)
+        const x:number = width;
+        const y:number = Number(iconSize || 30) / 2;
+        ctx.drawImage(img || '', x, y, 0, width, width)
     }
     //设置二维码边框
     private SetBorderCode (ctx:UniApp.CanvasContext,size:number,border?:BorderCode) {
         let S = border?.color;
-		let lineWidth = border?.lineWidth || 4;
-		let V = ctx.createLinearGradient(0, 0, size, 0);
+		let lineWidth: number = border?.lineWidth || 4;
+		let Gradient = ctx.createLinearGradient(0, 0, size, 0);
 		if (Object.prototype.toString.call(S) == '[object Array]') {
-			// V.addColorStop(0, S[0]);
-			// V.addColorStop(1, S[1]);
-			// ctx.setStrokeStyle(V)//ctx.setStrokeStyle("#000000");
+			// Gradient.addColorStop(0, S[0]);
+			// Gradient.addColorStop(1, S[1]);
+			// ctx.setStrokeStyle(Gradient)//ctx.setStrokeStyle("#000000");
 		}
 		ctx.setLineWidth(lineWidth);
 		ctx.strokeRect(0, 0, size, size)
