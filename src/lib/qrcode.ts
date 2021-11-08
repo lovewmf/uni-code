@@ -6,8 +6,8 @@ import {
     fmtword,
     adelta,
     UNIT_CONVERSION,
-    UtF16TO8,
-    SaveCodeImg
+    // UtF16TO8,
+    // SaveCodeImg
 } from '../common/support'
 
 /**
@@ -65,7 +65,7 @@ class QRCodeInit {
     eccblkwid: number = 0;
 
     RepaintCanvas (opt:BarCodePars, ctx:UniApp.CanvasContext, callback?:void) {
-        const CODE: string = UtF16TO8(opt.code)
+        // const CODE: string = UtF16TO8(opt.code)
         const SIZE: number = UNIT_CONVERSION(opt.size)
 
         ctx.clearRect(0, 0, SIZE, SIZE);

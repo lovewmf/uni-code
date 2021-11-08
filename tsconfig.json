@@ -3,7 +3,7 @@
         // "baseUrl": ".",
         // "outDir": "./dist", // 输出目录
         // "sourceMap": false, // 是否生成sourceMap
-        "target": "esnext", // 编译目标
+        "target": "es5", // 编译目标
         "module": "esnext", // 模块类型
         "suppressImplicitAnyIndexErrors": true,
         "moduleResolution": "node",
@@ -12,11 +12,8 @@
         "strict": true, // 严格模式
         "noUnusedLocals": true, // 未使用变量报错
         "experimentalDecorators": true, // 启动装饰器
-        "esModuleInterop": true, 
-        "removeComments": true, // 删除注释
-        //"declaration": true, // 生成定义文件
-        "declarationMap": false, // 生成定义sourceMap
-        // "declarationDir": "./lib/types", // 定义文件输出目录
+        "esModuleInterop": true,
+        "declarationMap": false, // 生成定义sourceMapss
         "lib": ["es5", "es2015", "es2016", "es2017", "es2018", "dom"],  // 导入库类型定义
         "types": ["@dcloudio/types"] // 导入指定类型包
       },
