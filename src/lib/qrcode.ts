@@ -6,24 +6,29 @@ import {
     fmtword,
     adelta,
     UNIT_CONVERSION,
-    // UtF16TO8,
-    // SaveCodeImg
+    UtF16TO8,
+    SaveCodeImg
 } from '../common/support'
 
 /**
 * @description 定义二维码参数
 */
+interface BorderCode {
+    color: string[],
+    lineWidth: number
+}
 interface BarCodePars {
     id: string | UniApp.CanvasContext,
-    size: string | number, //二维码大小
-    code: string, //二维码的code
-    bgColor?: string, // 二维码背景色 默认 #FFFFFF
-    color?: string[], // 生产的二维码颜色多个颜色渐变
-    img?: string, //二维码log
+    size: string | number,
+    code: string,
+    bgColor?: string,
+    color?: string[],
+    img?: string,
     iconSize?: number,
-    ctx: object // 自定义组组件 需要传上下文this
+    border?: BorderCode,
+    ctx: object
 }
-export const WidgetCode = function(opt: BarCodePars,callback?: void){
+export const WidgetCode = function(opt: BarCodePars,method?: Function){
     if (!opt.code) {
         console.warn("没有找到二维码code");
         return
@@ -36,50 +41,100 @@ export const WidgetCode = function(opt: BarCodePars,callback?: void){
     const BARCODE = new QRCodeInit()
     if (Object.prototype.toString.call(opt.id) == '[object String]') {
         CTX = uni.createCanvasContext(<string>opt.id, opt.ctx || null);
-        BARCODE.RepaintCanvas(opt, CTX, callback)
+        BARCODE.RepaintCanvas(opt, CTX, method)
     } else if (Object.prototype.toString.call(opt.id) == '[object Object]') {//在此兼容nvue
         CTX = opt.id as UniApp.CanvasContext;
-        BARCODE.RepaintCanvas(opt, CTX, callback)
+        BARCODE.RepaintCanvas(opt, CTX, method)
     }
 
 }
 class QRCodeInit {
-    strinbuf: number[] = [];
-    eccbuf: number[] = [];
-    qrframe: number[] = [];
-    framask: number[] = [];
-    rlens: number[] = [];
-    genpoly: number[] = []
+    private strinbuf: number[] = [];
+    private eccbuf: number[] = [];
+    private qrframe: number[] = [];
+    private framask: number[] = [];
+    private rlens: number[] = [];
+    private genpoly: number[] = []
 
-    ecclevel:number = 2;
-    N1:number = 3;
-    N2:number = 3;
-    N3:number = 40;
-    N4:number = 10;
+    private ecclevel:number = 2;
+    private N1:number = 3;
+    private N2:number = 3;
+    private N3:number = 40;
+    private N4:number = 10;
 
-    version: string = '';
-    neccblk2: number = 0;
-    width: number = 0;
-    neccblk1: number = 0;
-    datablkw: number = 0;
-    eccblkwid: number = 0;
+    private neccblk2: number = 0;
+    private width: number = 0;
+    private neccblk1: number = 0;
+    private datablkw: number = 0;
+    private eccblkwid: number = 0;
 
-    RepaintCanvas (opt:BarCodePars, ctx:UniApp.CanvasContext, callback?:void) {
-        // const CODE: string = UtF16TO8(opt.code)
+    public RepaintCanvas (opt:BarCodePars, ctx:UniApp.CanvasContext, method?:Function) {
+        
+        const CODE: string = UtF16TO8(opt.code)//转码
+        const frame = this.Genframe(CODE)
         const SIZE: number = UNIT_CONVERSION(opt.size)
+        const px: number = Math.round(SIZE / (this.width + 8));
+        const roundedSize: number = px * (this.width + 8);
+        const offset: number = Math.floor((SIZE - roundedSize) / 2);
 
-        ctx.clearRect(0, 0, SIZE, SIZE);
-		ctx.setFillStyle(opt.bgColor || '#FFFFFF');
+        ctx.clearRect(0, 0, SIZE, SIZE);// 二维码大小
+		ctx.setFillStyle(opt.bgColor || '#FFFFFF');//二维码背景色
 		ctx.fillRect(0, 0, SIZE, SIZE);
-        if (opt.color) {// 如果存在颜色
-            let V = ctx.createLinearGradient(0, 0, SIZE, 0);
-            // V.addColorStop(0, S[0]);
-			// V.addColorStop(1, S[1]);
-			ctx.setFillStyle(V)
+
+        for (let i = 0; i < this.width; i++) {//开始生成二维码
+            for (let j = 0; j < this.width; j++) {
+                if (frame[j * this.width + i]) {
+                    ctx.fillRect(px * (4 + i) + offset, px * (4 + j) + offset, px, px);
+                }
+            }
         }
+        opt.color ? this.SetColorCode(ctx,SIZE,opt.color) : ctx.setStrokeStyle("#000000");
+        opt.img ? this.SetImageCode(ctx,SIZE, opt.iconSize, opt.img) : false;
+        opt.border ? this.SetBorderCode(ctx,SIZE,opt.border) : false;
+
+        ctx.draw(false, async (res) => {
+            method?.call({
+                ...res,
+                img: await SaveCodeImg({
+                    width: opt.size,
+                    height: opt.size,
+                    id: opt.id,
+                    ctx: opt.ctx || null
+                }),
+                id: Object.prototype.toString.call(opt.id) == '[object String]' ? opt.id : "nvue"
+            })
+        });
 
     }
-    setmask(x:number,y:number){
+    // 设置二维码颜色
+    private SetColorCode (ctx:UniApp.CanvasContext,size:number,color:string[]) {
+        let V = ctx.createLinearGradient(0, 0, size, 0);
+        color.forEach((item)=>{
+
+        })
+        // V.addColorStop(0, S[0]);
+		// V.addColorStop(1, S[1]);
+		ctx.setFillStyle(V)
+    }
+    // 设置二维码log
+    private SetImageCode (ctx:UniApp.CanvasContext,size:number,iconSize?:number ,img?:string) {
+        let width =  Number(((size - (iconSize || 30)) / 2).toFixed(2));
+        ctx.drawImage(img || '', 0, 0, width, width)
+    }
+    //设置二维码边框
+    private SetBorderCode (ctx:UniApp.CanvasContext,size:number,border?:BorderCode) {
+        let S = border?.color;
+		let lineWidth = border?.lineWidth || 4;
+		let V = ctx.createLinearGradient(0, 0, size, 0);
+		if (Object.prototype.toString.call(S) == '[object Array]') {
+			// V.addColorStop(0, S[0]);
+			// V.addColorStop(1, S[1]);
+			// ctx.setStrokeStyle(V)//ctx.setStrokeStyle("#000000");
+		}
+		ctx.setLineWidth(lineWidth);
+		ctx.strokeRect(0, 0, size, size)
+    }
+    private setmask (x:number,y:number) {
         let bt = null;
         if (x > y) {
             bt = x;
@@ -93,7 +148,7 @@ class QRCodeInit {
         bt += x;
         this.framask[bt] = 1;
     }
-    putalign (x:number,y:number) {
+    private putalign (x:number,y:number) {
         let j = null;
         this.qrframe[x + this.width * y] = 1;
         for (j = -2; j < 2; j++) {
@@ -110,14 +165,14 @@ class QRCodeInit {
         }
 
     }
-    modnn (x: number) {
+    private modnn (x: number) :number{
         while (x >= 255) {
             x -= 255;
             x = (x >> 8) + (x & 255);
         }
         return x;
     }
-    appendrs (data:number, dlen:number, ecbuf:number, eclen:number) {
+    private appendrs (data:number, dlen:number, ecbuf:number, eclen:number) {
         let fb:number;
         for (let i = 0; i < eclen; i++){
             this.strinbuf[0] = 0;
@@ -136,7 +191,7 @@ class QRCodeInit {
             this.strinbuf[ ecbuf + eclen - 1] = fb == 255 ? 0 : gexp[this.modnn(fb + this.genpoly[0])];
         }
     }
-    ismasked (x:number, y:number) {
+    private ismasked (x:number, y:number) :number {
         let bt: number;
         if (x > y) {
             bt = x;
@@ -149,7 +204,7 @@ class QRCodeInit {
         bt += x;
         return this.framask[bt];
     }
-    badruns (length: number) {
+    private badruns (length: number) :number{
         let runsbad: number = 0;
         for (let i = 0; i <= length; i++)
             if (this.rlens[i] >= 5)
@@ -166,10 +221,10 @@ class QRCodeInit {
                 runsbad += this.N3;
         return runsbad;
     }
-    toNum (num:number) {
+    private toNum (num:number):number {
         return  num === 0 ? 1 : 0
     }
-    applymask (m:number) {
+    private applymask (m:number) {
         switch (m) {
         case 0:
             for (let y = 0; y < this.width; y++)
@@ -209,7 +264,6 @@ class QRCodeInit {
                 for (let r3x = 0, r3y = ((y >> 1) & 1), x = 0; x < this.width; x++, r3x++) {
                     if (r3x == 3) {
                         r3x = 0;
-                        // r3y = !r3y;
                         r3y = r3y > 0  ? 0 : 1;
                     }
                     if (!r3y && !this.ismasked(x, y))
@@ -255,8 +309,7 @@ class QRCodeInit {
         }
         return;
     }
-    genframe (code: string) {
-        // var x j;
+    private Genframe (code: string) :number[] {
         let t: number = code.length;
         let k:number = 0;
         let y: number = 0;
@@ -421,8 +474,6 @@ class QRCodeInit {
             this.strinbuf[1] |= 255 & (v << 4);
             this.strinbuf[0] = 0x40 | (v >> 4);
         }
-
-        // i = v + 3 - (version < 10);
         i = v + 3 - (version < 10 ? 1 : 0);
         while (i < x) {
             this.strinbuf[i++] = 0xec;
@@ -554,7 +605,7 @@ class QRCodeInit {
             }
         return this.qrframe;
     }
-    badcheck ()  {
+    private badcheck () :number  {
         let thisbad: number = 0;
         let bw: number = 0;
         let h: number = 0;

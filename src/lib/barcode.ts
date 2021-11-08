@@ -1,7 +1,8 @@
 import {
     PATTERNS, 
     UNIT_CONVERSION, 
-    StringToCode128
+    StringToCode128,
+    SaveCodeImg
 } from '../common/support'
 
 //定义条形码参数
@@ -10,17 +11,17 @@ interface OperationCodePars {
     width: number,
     height: number,
     code: string,
-    bgColor: string,
-    color: string,
-    ctx?: object
+    bgColor?: string,
+    color?: string,
+    ctx: object
 }
 
 /**
 * @author wmf❤洛尘 
 * @method OperationCode 创建条形码
-* @description 使用与UniApp的条形码
+* @description 使用UniApp的条形码
 */
-export const OperationCode = function (opt:OperationCodePars, callback?:void) {
+export const OperationCode = function (opt:OperationCodePars, method?:Function) {
     if (!opt.code) {
         console.warn("没有找到条形码code");
         return
@@ -32,13 +33,13 @@ export const OperationCode = function (opt:OperationCodePars, callback?:void) {
     let CTX: UniApp.CanvasContext;
     if (Object.prototype.toString.call(opt.id) == '[object String]') {
         CTX = uni.createCanvasContext(<string>opt.id, opt.ctx || null);
-        BarCodeCanvas(opt, CTX, callback)
+        BarCodeCanvas(opt, CTX, method)
     } else if (Object.prototype.toString.call(opt.id) == '[object Object]') {//在此兼容nvue
         CTX = opt.id as UniApp.CanvasContext;
-        BarCodeCanvas(opt, CTX, callback)
+        BarCodeCanvas(opt, CTX, method)
     }
 }
-export const BarCodeCanvas = function (opt:OperationCodePars, ctx:UniApp.CanvasContext, callback?:void) {
+export const BarCodeCanvas = function (opt:OperationCodePars, ctx:UniApp.CanvasContext, method?:Function) {
     const width: number = UNIT_CONVERSION(opt.width);
     const height: number = UNIT_CONVERSION(opt.height);
     const CodeNum: number[] = StringToCode128(opt.code);
@@ -61,8 +62,17 @@ export const BarCodeCanvas = function (opt:OperationCodePars, ctx:UniApp.CanvasC
             x += barW + spcW;
         }
     }
-    ctx.draw(false,(res) => {
-
+    ctx.draw(false, async (res) => {
+        method?.call({
+            ...res,
+            img: await SaveCodeImg({
+                width: opt.width,
+                height: opt.height,
+                id: opt.id,
+                ctx: opt.ctx || null
+            }),
+            id: Object.prototype.toString.call(opt.id) == '[object String]' ? opt.id : "nvue"
+        })
     });
 }
 interface areaPars {

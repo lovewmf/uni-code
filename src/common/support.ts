@@ -1,10 +1,3 @@
-/**
-* @author wmf❤洛尘
-* @Date 2021-10-28
-* @LastEditTime 2021-11-05
-* @description uni-app 二维码 条形码
-* */
-
 export const CHAR_TILDE: number = 126;
 export const CODE_FNC1: number = 102;
 export const SET_STARTA: number = 103;
@@ -311,10 +304,10 @@ export const codeSetAllowedFor = function (chr: number):number {
     }
 }
 interface SaveCanvasPars {
-    id: string|object,
-    type: string,
-    width: string|number,
-    height: string|number,
+    id: string | UniApp.CanvasContext,
+    type?: string,
+    width: string | number,
+    height: string | number,
     ctx: object
 }
 /**
@@ -339,8 +332,8 @@ export const SaveCodeImg = function(k:SaveCanvasPars):object{
                     resolve(res)
                 }
             }, k.ctx)
-        } else if (Object.prototype.toString.call(k.id) == '[object Object]') {
-            // const ctx = k.id as CanvasToTempFilePathOptions;
+        } else if (Object.prototype.toString.call(k.id) == '[object Object]') {//兼容nvue
+            const ctx = k.id as UniApp.CanvasContext;
             // ctx.toTempFilePath(0, 0, width, height, width, height, k.type || 'png', 1,(res: unknown)=> {
             //     resolve(res)
             // })
