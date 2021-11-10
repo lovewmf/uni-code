@@ -11,7 +11,23 @@ declare namespace StrongCode {
      */
     interface BorderCode {
         color: string[],
+        type: string, //none round
         lineWidth: number
+    }
+    /**
+     * @description 二维码边中间图片参数
+     * @param src 图片地址
+     * @param size 图片大小
+     * @param color 图片边框颜色 默认为 #FFFFFF
+     * @param type 图片类型 none circle round 默认none
+     * @param width 如果type = circle | round 图片周围的白色边框粗细 默认为5
+     */
+    interface CodeImg {
+       src: string,
+       size?: number,
+       type?: string,
+       color?: string,
+       width?: number
     }
     /**
      * @description 生成二维码参数
@@ -23,7 +39,7 @@ declare namespace StrongCode {
         level?: number,
         bgColor?: string,
         color?: string[],
-        img?: string,
+        img?: CodeImg,
         iconSize?: number,
         border?: BorderCode,
         ctx: object

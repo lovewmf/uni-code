@@ -57,7 +57,7 @@ const RepaintCanvas = function (opt: StrongCode.BarCodePars, ctx: UniApp.CanvasC
         }
     }
     // 图片放在下面 防止图片在二维码下面
-    opt.img ? SetImageCode(ctx,SIZE, opt.iconSize, opt.img) : false;
+    opt.img ? SetImageType[opt.img.type || 'none'](ctx,SIZE,opt.img) : false;
 
     ctx.draw(false, async (res) => {
         callback ? callback({
@@ -98,16 +98,65 @@ const SetColorCode = function (ctx: UniApp.CanvasContext,size: number,colors: st
     }
     ctx.setFillStyle(Gradient)
 }
-
 /**
- * @method SetImageCode
  * @author wmf
- * @todo 二维码中间log type 圆形 圆角 图片周围白色边框
- * @description 设置二维码log
+ * @method SetImageType
+ * @description 二维码中间log绘制
  */
-const SetImageCode = function(ctx: UniApp.CanvasContext,size: number,iconSize: number = 30 ,img: string): void {
-    let width =  Number(((size - (iconSize)) / 2).toFixed(2));
-    ctx.drawImage(img, width, width, iconSize, iconSize)
+const SetImageType = {//none circle round
+    'none': function SetImageCode(ctx: UniApp.CanvasContext,size: number, img: StrongCode.CodeImg){
+        const iconSize = img?.size || 30
+        const width =  Number(((size - iconSize) / 2).toFixed(2));
+        ctx.drawImage(img.src, width, width, iconSize, iconSize)
+    },
+    /**
+     * @method SetCircleImg
+     * @author wmf
+     * @todo 二维码中间log 圆形
+     * @description 设置二维码log为圆形
+     */
+    'circle': function SetCircleImg(ctx: UniApp.CanvasContext,size: number, img: StrongCode.CodeImg){
+        const r: number = (img.size || 30);
+        const w: number = r * 2;
+        const x: number = size/2 - r;
+        const y: number = size/2 - r;
+		const cx: number = x + r;
+		const cy: number = y + r;
+		ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+		ctx.setLineWidth(img.width || 5)
+		ctx.setStrokeStyle(img.color || "#FFFFFF"); // 设置绘制圆形边框的颜色
+		ctx.stroke(); 
+		ctx.clip();
+		ctx.drawImage(img.src, x, y, w, w);
+    },
+    /**
+     * @method SetRoundImg
+     * @author wmf
+     * @todo 二维码中间log 圆角
+     * @description 设置二维码log为圆角
+     */
+    'round': function SetRoundImg(ctx: UniApp.CanvasContext,size: number, img: StrongCode.CodeImg) {
+        let r: number = 5;
+        const iconSize = img.size || 30;
+        const w: number = iconSize;
+        const h: number = iconSize;
+        const x: number = size/2 - iconSize/2;
+        const y: number = size/2 - iconSize/2;
+        w < 2 * r ? r = w / 2 : false;
+        h < 2 * r ? r = h / 2 : false;
+		ctx.beginPath();
+		ctx.moveTo(x + r, y);
+		ctx.arcTo(x + w, y, x + w, y + h, r);
+		ctx.arcTo(x + w, y + h, x, y + h, r);
+		ctx.arcTo(x, y + h, x, y, r);
+		ctx.arcTo(x, y, x + w, y, r);
+		ctx.closePath();
+        ctx.setLineWidth(img.width || 5)
+		ctx.setStrokeStyle(img.color || "#FFFFFF"); // 设置绘制圆形边框的颜色
+		ctx.stroke();
+		ctx.clip();
+		ctx.drawImage(img.src, x, y, w , w);
+    }
 }
 /**
  * 
