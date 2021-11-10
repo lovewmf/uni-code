@@ -98,17 +98,6 @@ export const codeSetAllowedFor = function (chr: number): number {
     }
 }
 
-interface NvueCanvasConText extends UniApp.CanvasContext { //兼容Nvue
-    toTempFilePath(x: number, y: number, w: number, h: number, dw: number, dh:number, type?: string, quality?: number, callback?: (result: any) => void): void;
-}
-interface SaveCanvasPars {
-    id: string | UniApp.CanvasContext,
-    type?: string,
-    width: string | number,
-    height: string | number,
-    quality?: number,
-    ctx: object
-}
 /**
  * @author wmf❤洛尘
  * @method SaveCodeImg
@@ -116,7 +105,7 @@ interface SaveCanvasPars {
  * @param k 
  * @returns 
  */
-export const SaveCodeImg = function(k: SaveCanvasPars): object{
+export const SaveCodeImg = function(k: StrongCode.SaveCanvasPars): object{
     const width: number = UNIT_CONVERSION(Number(k.width));
     const height: number = UNIT_CONVERSION(Number(k.height));
     return new Promise((resolve)=>{
@@ -134,7 +123,7 @@ export const SaveCodeImg = function(k: SaveCanvasPars): object{
                 }
             }, k.ctx)
         } else if (Object.prototype.toString.call(k.id) == '[object Object]') {//兼容nvue
-            const ctx = k.id as NvueCanvasConText;
+            const ctx = k.id as StrongCode.NvueCanvasConText;
             ctx.toTempFilePath(0, 0, width, height, width, height, k.type || 'png', 1,(res)=> {
                 resolve(res)
             })
@@ -846,20 +835,10 @@ export const SET_CODEB: number = 100;
 export const SET_STOP: number = 106;
 
 
-interface  PCodeOpt {
-    CHAR_TILDE: number
-}
-export const REPLACE_CODES: PCodeOpt = {
+export const REPLACE_CODES: StrongCode.PCodeOpt = {
     CHAR_TILDE: CODE_FNC1 //GS1-128
 }
-interface  Provider {
-    ANY: number,
-    AB: number,
-    A: number,
-    B: number,
-    C: number
-}
-export const CODESET: Provider = {
+export const CODESET: StrongCode.Provider = {
     ANY: 1,
     AB: 2,
     A: 3,

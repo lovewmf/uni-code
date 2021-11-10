@@ -6,7 +6,7 @@
         "target": "es5", // 编译目标
         "module": "esnext", // 模块类型
         "removeComments": true,// 删除注释 
-        "sourceMap": true  ,
+        "sourceMap": true,
         "suppressImplicitAnyIndexErrors": true,
         "moduleResolution": "node",
         "allowUnreachableCode": true, // 不报告执行不到的代码错误。
@@ -17,9 +17,9 @@
         "esModuleInterop": true,
         "declarationMap": false, // 生成定义sourceMapss
         "lib": ["es5", "es2015", "es2016", "es2017", "es2018", "dom"],  // 导入库类型定义
-        "types": ["@dcloudio/types"] // 导入指定类型包
-      },
-      // "include": [
-      //   "src/*"  // 导入目录
-      // ]
+        "types": [// 导入指定类型包
+          "@dcloudio/types",
+          "./src/types/code"
+        ]
+    },
 }

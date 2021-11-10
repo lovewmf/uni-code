@@ -6,23 +6,12 @@ import {
 
 import {PATTERNS} from '../common/metadata'
 
-//定义条形码参数
-interface OperationCodePars {
-    id: string | UniApp.CanvasContext,
-    width: number,
-    height: number,
-    code: string,
-    bgColor?: string,
-    color?: string,
-    ctx: object
-}
-
 /**
 * @author wmf❤洛尘 
 * @method OperationCode 创建条形码
 * @description 使用UniApp的条形码
 */
-export const OperationCode = function (opt: OperationCodePars, callback?: Function) {
+export const OperationCode = function (opt: StrongCode.OperationCodePars, callback?: Function) {
     if (!opt.code) {
         console.warn("没有找到条形码code");
         return
@@ -40,7 +29,7 @@ export const OperationCode = function (opt: OperationCodePars, callback?: Functi
         BarCodeCanvas(opt, CTX, callback)
     }
 }
-export const BarCodeCanvas = function (opt: OperationCodePars, ctx: UniApp.CanvasContext, callback?: Function) {
+export const BarCodeCanvas = function (opt: StrongCode.OperationCodePars, ctx: UniApp.CanvasContext, callback?: Function) {
     const width: number = UNIT_CONVERSION(opt.width);
     const height: number = UNIT_CONVERSION(opt.height);
     const CodeNum: number[] = StringToCode128(opt.code);
@@ -75,12 +64,6 @@ export const BarCodeCanvas = function (opt: OperationCodePars, ctx: UniApp.Canva
         }) : null;
     });
 }
-interface areaPars {
-    width: number,
-    height: number,
-    top: number,
-    left: number
-}
 class GraphicContent {
     width: number;
     height:number;
@@ -90,7 +73,7 @@ class GraphicContent {
     ctx: UniApp.CanvasContext;
     color: string;
     backGroud: string;
-    area: areaPars;
+    area: StrongCode.areaPars;
 
     constructor (ctx: UniApp.CanvasContext,width: number,height: number,color: string,backGroud: string) {
         this.ctx = ctx;

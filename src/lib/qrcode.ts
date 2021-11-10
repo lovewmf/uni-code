@@ -8,23 +8,7 @@ import {
 /**
 * @description 定义二维码参数
 */
-interface BorderCode {
-    color: string[],
-    lineWidth: number
-}
-interface BarCodePars {
-    id: string | UniApp.CanvasContext,
-    size: string | number,
-    code: string,
-    level?: number,
-    bgColor?: string,
-    color?: string[],
-    img?: string,
-    iconSize?: number,
-    border?: BorderCode,
-    ctx: object
-}
-export const WidgetCode = function(opt: BarCodePars,callback?: Function){
+export const WidgetCode = function(opt: StrongCode.BarCodePars,callback?: Function){
     if (!opt.code) {
         console.warn("没有找到二维码code");
         return
@@ -51,7 +35,7 @@ export const WidgetCode = function(opt: BarCodePars,callback?: Function){
     }
 
 }
-const RepaintCanvas = function (opt:BarCodePars, ctx: UniApp.CanvasContext, frame: number[], width: number, callback?: Function) {
+const RepaintCanvas = function (opt: StrongCode.BarCodePars, ctx: UniApp.CanvasContext, frame: number[], width: number, callback?: Function) {
 
     const SIZE: number = UNIT_CONVERSION(opt.size)
     const px: number = Math.round(SIZE / (width + 8));
@@ -132,7 +116,8 @@ const SetImageCode = function(ctx: UniApp.CanvasContext,size: number,iconSize: n
  * @todo 二维码边框 圆角 边框颜色支持多种渐变
  * @description 设置二维码边框
  */
- const SetBorderCode = function(ctx: UniApp.CanvasContext,size: number,border?: BorderCode): void {
+
+ const SetBorderCode = function(ctx: UniApp.CanvasContext,size: number,border?: StrongCode.BorderCode): void {
     let colors: string[] = border?.color || ['#000000'];
     let lineWidth: number = border?.lineWidth || 4;
     let Gradient: UniApp.CanvasGradient = ctx.createLinearGradient(0, 0, size, 0);
