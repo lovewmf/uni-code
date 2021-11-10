@@ -5,6 +5,8 @@
         // "sourceMap": false, // 是否生成sourceMap
         "target": "es5", // 编译目标
         "module": "esnext", // 模块类型
+        "removeComments": true,// 删除注释 
+        "sourceMap": true  ,
         "suppressImplicitAnyIndexErrors": true,
         "moduleResolution": "node",
         "allowUnreachableCode": true, // 不报告执行不到的代码错误。

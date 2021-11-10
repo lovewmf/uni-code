@@ -1,15 +1,19 @@
 {
-  "name": "uni-code",
+  "name": "@uni-ui/code-plugs",
   "version": "1.0.0",
   "description": "条形码 二维码",
-  "main": "index.js",
+  "main": "dist/code.min.js",
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "code"
+    "QR code",
+    "barcode",
+    "BarCode",
+    "QRCode",
+    "uni-code"
   ],
   "author": "wmf",
   "license": "ISC",
