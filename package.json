@@ -13,7 +13,8 @@
     "barcode",
     "BarCode",
     "QRCode",
-    "uni-code"
+    "uni-code",
+    "TS"
   ],
   "author": "wmf",
   "license": "ISC",

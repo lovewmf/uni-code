@@ -82,21 +82,21 @@ const RepaintCanvas = function (opt: StrongCode.BarCodePars, ctx: UniApp.CanvasC
  * @description 设置二维码颜色 支持渐变色
  */
 const SetColorCode = function (ctx: UniApp.CanvasContext,size: number,colors: string[]): void {
-    let Gradient: UniApp.CanvasGradient = ctx.createLinearGradient(0, 0, size, 0);
+    let GRD: UniApp.CanvasGradient = ctx.createLinearGradient(0, 0, size, 0);
     if(colors.length === 1){
-        Gradient.addColorStop(0, colors[0]);
-        Gradient.addColorStop(1, colors[0]);
+        GRD.addColorStop(0, colors[0]);
+        GRD.addColorStop(1, colors[0]);
     }
     if(colors.length === 2){
-        Gradient.addColorStop(0, colors[0]);
-        Gradient.addColorStop(1, colors[1]);
+        GRD.addColorStop(0, colors[0]);
+        GRD.addColorStop(1, colors[1]);
     }
     if(colors.length === 3){
-        Gradient.addColorStop(0, colors[0]);
-        Gradient.addColorStop(0.5, colors[1]);
-        Gradient.addColorStop(1, colors[2]);
+        GRD.addColorStop(0, colors[0]);
+        GRD.addColorStop(0.5, colors[1]);
+        GRD.addColorStop(1, colors[2]);
     }
-    ctx.setFillStyle(Gradient)
+    ctx.setFillStyle(GRD)
 }
 /**
  * @author wmf
@@ -136,7 +136,7 @@ const SetImageType = {//none circle round
      * @description 设置二维码log为圆角
      */
     'round': function SetRoundImg(ctx: UniApp.CanvasContext,size: number, img: StrongCode.CodeImg) {
-        let r: number = 5;
+        let r: number = img.degree || 5;
         const iconSize = img.size || 30;
         const w: number = iconSize;
         const h: number = iconSize;
@@ -167,23 +167,36 @@ const SetImageType = {//none circle round
  */
 
  const SetBorderCode = function(ctx: UniApp.CanvasContext,size: number,border?: StrongCode.BorderCode): void {
-    let colors: string[] = border?.color || ['#000000'];
-    let lineWidth: number = border?.lineWidth || 4;
-    let Gradient: UniApp.CanvasGradient = ctx.createLinearGradient(0, 0, size, 0);
+    const colors: string[] = border?.color || ['#F27121','#8A2387'];
+    const r: number = border?.degree || 5;
+    const x: number = 0;
+    const y: number = 0;
+    const w: number = size;
+    const h: number = size;
+    let GRD: UniApp.CanvasGradient = ctx.createLinearGradient(0, 0, size, 0);
     if(colors.length === 1){
-        Gradient.addColorStop(0, colors[0]);
-        Gradient.addColorStop(1, colors[0]);
+        GRD.addColorStop(0, colors[0]);
+        GRD.addColorStop(1, colors[0]);
     }
     if(colors.length === 2){
-        Gradient.addColorStop(0, colors[0]);
-        Gradient.addColorStop(1, colors[1]);
+        GRD.addColorStop(0, colors[0]);
+        GRD.addColorStop(1, colors[1]);
     }
     if(colors.length === 3){
-        Gradient.addColorStop(0, colors[0]);
-        Gradient.addColorStop(0.5, colors[1]);
-        Gradient.addColorStop(1, colors[2]);
+        GRD.addColorStop(0, colors[0]);
+        GRD.addColorStop(0.5, colors[1]);
+        GRD.addColorStop(1, colors[2]);
     }
-    ctx.setStrokeStyle(Gradient)
-    ctx.setLineWidth(lineWidth);
-    ctx.strokeRect(0, 0, size, size)
+	ctx.beginPath();
+	ctx.moveTo(x + r, y);
+	ctx.arcTo(x + w, y, x + w, y + h, r);
+	ctx.arcTo(x + w, y + h, x, y + h, r);
+	ctx.arcTo(x, y + h, x, y, r);
+	ctx.arcTo(x, y, x + w, y, r);
+
+    ctx.closePath();
+	ctx.setLineWidth(border?.lineWidth || 5)
+	ctx.setStrokeStyle(GRD); // 设置绘制圆形边框的颜色
+	ctx.stroke();
+	ctx.clip();
 }

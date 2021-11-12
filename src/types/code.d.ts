@@ -11,7 +11,7 @@ declare namespace StrongCode {
      */
     interface BorderCode {
         color: string[],
-        type: string, //none round
+        degree: number,
         lineWidth: number
     }
     /**
@@ -27,7 +27,8 @@ declare namespace StrongCode {
        size?: number,
        type?: string,
        color?: string,
-       width?: number
+       width?: number,
+       degree: number,
     }
     /**
      * @description 生成二维码参数
