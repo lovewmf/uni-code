@@ -12,7 +12,8 @@ declare namespace StrongCode {
     interface BorderCode {
         color: string[],
         degree: number,
-        lineWidth: number
+        lineWidth: number,
+        opacity: number,
     }
     /**
      * @description 二维码边中间图片参数
@@ -31,6 +32,17 @@ declare namespace StrongCode {
        degree: number,
     }
     /**
+     * @description 二维码文字绘制
+     * @param placement 文字的位置可选值 top bottom middle 默认 middle
+     */
+    interface CodeText {
+        opacity?: number,
+        font?: string,
+        placement?: string,
+        color?: string[],
+        content: string
+    }
+    /**
      * @description 生成二维码参数
      */
     interface BarCodePars {
@@ -39,6 +51,7 @@ declare namespace StrongCode {
         code: string,
         level?: number,
         bgColor?: string,
+        text?: CodeText,
         color?: string[],
         img?: CodeImg,
         iconSize?: number,
