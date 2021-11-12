@@ -1,8 +1,9 @@
 import {
     UNIT_CONVERSION, 
-    StringToCode128,
     SaveCodeImg
 } from '../common/support'
+
+import { BarCode128, BarCode39 } from '../codeType'
 
 import {PATTERNS} from '../common/metadata'
 
@@ -32,25 +33,11 @@ export const OperationCode = function (opt: StrongCode.OperationCodePars, callba
 export const BarCodeCanvas = function (opt: StrongCode.OperationCodePars, ctx: UniApp.CanvasContext, callback?: Function) {
     const width: number = UNIT_CONVERSION(opt.width);
     const height: number = UNIT_CONVERSION(opt.height);
-    const CodeNum: number[] = StringToCode128(opt.code);
-    let gc = new GraphicContent(ctx, width, height,opt.color || "#000000",opt.bgColor || "#ffffff");
-    let barWeight = gc.area.width / ((CodeNum.length - 3) * 11 + 35);
-    let x: number = gc.area.left;
-    const y = gc.area.top;
-    for (let i = 0; i < CodeNum.length; i++) {
-        const c = CodeNum[i];
-        for (let bar = 0; bar < 8; bar += 2) {
-            const barW = PATTERNS[c][bar] * barWeight;
-            // const barH = height - y - this.border;
-            const barH = height - y;
-            const spcW = PATTERNS[c][bar + 1] * barWeight;
-            if (barW > 0) {
-                gc.fillFgRect(x, y, barW, barH);
-            }
 
-            x += barW + spcW;
-        }
-    }
+    let gc = new GraphicContentInit(ctx, width, height,opt.color || "#000000",opt.bgColor || "#ffffff");
+
+    SetBarCodeType[opt.type || 'CODE128'](opt.code,gc,height)
+    
     ctx.draw(false, async (res) => {
         callback ? callback({
             ...res,
@@ -64,7 +51,118 @@ export const BarCodeCanvas = function (opt: StrongCode.OperationCodePars, ctx: U
         }) : null;
     });
 }
-class GraphicContent {
+const SetBarCodeType = {
+    /**
+     * @method CODE128
+     * @param code 条形码的值
+     * @param gc 
+     * @param height 
+     * @description 条形码类型 默认CODE128
+     */
+    "CODE128": function CODE128 (code: string, gc: GraphicContentInit,height: number) {
+        const CodeNum: number[] = BarCode128(code);
+        let barWeight = gc.area.width / ((CodeNum.length - 3) * 11 + 35);
+        let x: number = gc.area.left;
+        const y = gc.area.top;
+        const barH = height - gc.area.top;
+        for (let i = 0; i < CodeNum.length; i++) {
+            const c = CodeNum[i];
+            for (let bar = 0; bar < 8; bar += 2) {
+                const barW = PATTERNS[c][bar] * barWeight;
+                // const barH = height - y - this.border
+                const spcW = PATTERNS[c][bar + 1] * barWeight;
+                if (barW > 0) {
+                    gc.fillFgRect(x, y, barW, barH);
+                }
+
+                x += barW + spcW;
+            }
+        }
+    },
+    /**
+     * @method CODE39
+     * @param code 条形码的值
+     * @param gc 
+     * @param height 
+     * @todo 待实现
+     * @description 条形码类型 CODE39
+     */
+    "CODE39": function CODE39 (code: string, gc: GraphicContentInit, height: number): void {
+        new BarCode39(code);
+        // const binary = Code39.encode()
+        console.error("条形码编码类型：CODE39暂未实现");
+        
+        // let x: number = gc.area.left;
+        // const y = gc.area.top;
+		// for(let i = 0; i < binary.length; i++){
+        //     const c = Number(binary[i]);
+		// 	x = i * 2;
+		// 	if(c === 1){
+        //         gc.fillFgRect(x, y,5, height);
+		// 	}
+		// }
+    },
+    /**
+     * @method EAN
+     * @param code 条形码的值
+     * @param gc 
+     * @param height 
+     * @todo 待实现
+     * @description 条形码类型 EAN
+     */
+    "EAN": function EAN (code: string, gc: GraphicContentInit, height: number): void {
+        console.error("条形码编码类型：EAN暂未实现");
+    },
+    /**
+     * @method ITF
+     * @param code 条形码的值
+     * @param gc 
+     * @param height 
+     * @todo 待实现
+     * @description 条形码类型 ITF
+     */
+    "ITF": function ITF (code: string, gc: GraphicContentInit, height: number): void {
+        console.error("条形码编码类型：ITF暂未实现");
+    },
+    /**
+     * @method MSI
+     * @param code 条形码的值
+     * @param gc 
+     * @param height 
+     * @todo 待实现
+     * @description 条形码类型 MSI
+     */
+    "MSI": function MSI (code: string, gc: GraphicContentInit, height: number): void {
+        console.error("条形码编码类型：MSI暂未实现");
+    },
+    /**
+     * @method Codabar
+     * @param code 条形码的值
+     * @param gc 
+     * @param height 
+     * @todo 待实现
+     * @description 条形码类型 Codabar
+     */
+    "Codabar": function Codabar (code: string, gc: GraphicContentInit, height: number): void {
+        console.error("条形码编码类型：Codabar暂未实现");
+    },
+    /**
+     * @method Pharmacode
+     * @param code 条形码的值
+     * @param gc 
+     * @param height 
+     * @todo 待实现
+     * @description 条形码类型 Pharmacode
+     */
+    "Pharmacode": function Pharmacode (code: string, gc: GraphicContentInit, height: number): void {
+        console.error("条形码编码类型：Pharmacode暂未实现");
+    }
+}
+/**
+ * @method GraphicContentInit
+ * @description 初始化条形码
+ */
+class GraphicContentInit {
     width: number;
     height:number;
     quiet: number;

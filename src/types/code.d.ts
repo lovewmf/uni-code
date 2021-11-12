@@ -62,6 +62,7 @@ declare namespace StrongCode {
         id: string | UniApp.CanvasContext,
         width: number,
         height: number,
+        type?: string,
         code: string,
         bgColor?: string,
         color?: string,
