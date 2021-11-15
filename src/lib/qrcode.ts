@@ -142,7 +142,9 @@ const SetImageType = {//none circle round
 		const cx: number = x + r;
 		const cy: number = y + r;
         ctx.save();
+        ctx.beginPath();
 		ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+        ctx.closePath();
 		ctx.setLineWidth(img.width || 5)
 		ctx.setStrokeStyle(img.color || "#FFFFFF"); // 设置绘制圆形边框的颜色
 		ctx.stroke(); 
@@ -216,8 +218,8 @@ const SetImageType = {//none circle round
 	ctx.arcTo(x + w, y + h, x, y + h, r);
 	ctx.arcTo(x, y + h, x, y, r);
 	ctx.arcTo(x, y, x + w, y, r);
-
     ctx.closePath();
+    ctx.restore()
 	ctx.setLineWidth(border?.lineWidth || 5)
 	ctx.setStrokeStyle(GRD); // 设置绘制圆形边框的颜色
 	ctx.stroke();
@@ -249,7 +251,6 @@ const SetImageType = {//none circle round
         GRD.addColorStop(0.5, colors[1]);
         GRD.addColorStop(1, colors[2]);
     }
-    ctx.restore();
     ctx.setGlobalAlpha(text?.opacity || 1)
     ctx.setTextAlign('center');//'left'、'center'、'right'
 	ctx.setTextBaseline('middle');//可选值 'top'、'bottom'、'middle'、'normal'
