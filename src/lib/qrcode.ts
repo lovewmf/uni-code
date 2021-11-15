@@ -54,7 +54,7 @@ const RepaintCanvas = function (opt: StrongCode.BarCodePars, ctx: UniApp.CanvasC
     for (let i = 0; i < width; i++) {//开始生成二维码
         for (let j = 0; j < width; j++) {
             if (frame[j * width + i]) {
-                // ctx.drawImage('/static/9.png', px * (4 + i) + offset, px * (4 + j) + offset, px, px);//二维码码点可以替换为图片
+                // SetCodeType[opt.type || 'none'](ctx,px * (4 + i) + offset, px * (4 + j) + offset, px, px)
                 ctx.fillRect(px * (4 + i) + offset, px * (4 + j) + offset, px, px);
             }
         }
@@ -77,6 +77,19 @@ const RepaintCanvas = function (opt: StrongCode.BarCodePars, ctx: UniApp.CanvasC
         }) : null;
     });
 
+}
+// @ts-ignore
+const SetCodeType = {
+    
+    'none': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
+        ctx.fillRect(x,y,w,h);
+    },
+    'starry': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
+        ctx.drawImage('', x, y, w, h)
+    },
+    'dots': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
+        ctx.drawImage('', x, y, w, h)
+    },
 }
 /**
  * @method SetColorCode

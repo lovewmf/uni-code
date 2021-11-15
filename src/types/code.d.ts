@@ -47,6 +47,7 @@ declare namespace StrongCode {
      */
     interface BarCodePars {
         id: string | UniApp.CanvasContext,
+        type?: string,
         size: string | number,
         code: string,
         level?: number,

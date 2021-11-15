@@ -20,6 +20,7 @@ qrc: {// 二维码
 	code: 'https://qm.qq.com/cgi-bin/qm/qr?k=LKqML292dD2WvwQfAJXBUmvgbiB_TZWF&noverify=0',
 	size: 460, // 二维码大小
 	level: 4, //纠错等级 0～4
+	type: 'none',
 	bgColor: '#FFFFFF', //二维码背景色 默认白色
 	border: {
 		degree: 15,//圆角度数 默认5
