@@ -58,9 +58,10 @@ const RepaintCanvas = function (opt: StrongCode.BarCodePars, ctx: UniApp.CanvasC
                 ctx.fillRect(px * (4 + i) + offset, px * (4 + j) + offset, px, px);
             }
         }
+  
     }
     // 图片放在下面 防止图片在二维码下面
-    opt.img ? SetImageType[opt.img.type || 'none'](ctx,SIZE,opt.img) : false;
+    opt.img ? SetImageType[opt.img?.type || 'none'] ?  SetImageType[opt.img?.type || 'none'](ctx,SIZE,opt.img) : SetImageType['none'](ctx,SIZE,opt.img) : false;
     //绘制二维码文字
     opt.text ? SetTextCode(ctx,SIZE,opt.text) : false;
     
@@ -78,15 +79,28 @@ const RepaintCanvas = function (opt: StrongCode.BarCodePars, ctx: UniApp.CanvasC
     });
 
 }
+/**
+ * @method SetCodeType
+ * @author wmf
+ * @Date 2021-11-15
+ * @LastEditTime 2021-11-15
+ * @description 设置二维码码点
+ */
 // @ts-ignore
 const SetCodeType = {
-    
+    // 正常码点
     'none': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
         ctx.fillRect(x,y,w,h);
     },
+    // 星星码点
     'starry': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
         ctx.drawImage('', x, y, w, h)
     },
+    // 自定义图片为码点
+    'custom': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number) {
+        
+    },
+    // 圆点码点
     'dots': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
         ctx.drawImage('', x, y, w, h)
     },
@@ -251,6 +265,7 @@ const SetImageType = {//none circle round
         GRD.addColorStop(0.5, colors[1]);
         GRD.addColorStop(1, colors[2]);
     }
+    ctx.restore();
     ctx.setGlobalAlpha(text?.opacity || 1)
     ctx.setTextAlign('center');//'left'、'center'、'right'
 	ctx.setTextBaseline('middle');//可选值 'top'、'bottom'、'middle'、'normal'

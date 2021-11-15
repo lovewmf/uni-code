@@ -80,7 +80,7 @@ declare namespace StrongCode {
         type?: string,
         code: string,
         bgColor?: string,
-        color?: string,
+        color?: string[],
         ctx: object
     }
     /**

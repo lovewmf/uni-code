@@ -33,8 +33,13 @@ export const OperationCode = function (opt: StrongCode.OperationCodePars, callba
 export const BarCodeCanvas = function (opt: StrongCode.OperationCodePars, ctx: UniApp.CanvasContext, callback?: Function) {
     const width: number = UNIT_CONVERSION(opt.width);
     const height: number = UNIT_CONVERSION(opt.height);
+    //设置背景色
+    ctx.setFillStyle(opt.bgColor || '#FFFFFF');
 
-    let gc = new GraphicContentInit(ctx, width, height,opt.color || "#000000",opt.bgColor || "#ffffff");
+    let gc = new GraphicContentInit(ctx, width, height);
+    
+    //设置颜色
+    opt.color ? SetBarCodeColors(ctx, width, height, opt.color || ['#000000']) : ctx.setFillStyle("#000000");
 
     SetBarCodeType[opt.type || 'CODE128'](opt.code,gc,height)
     
@@ -50,6 +55,24 @@ export const BarCodeCanvas = function (opt: StrongCode.OperationCodePars, ctx: U
             id: Object.prototype.toString.call(opt.id) == '[object String]' ? opt.id : "nvue"
         }) : null;
     });
+}
+//设置条形码颜色渐变色
+const SetBarCodeColors = function (ctx: UniApp.CanvasContext,width: number,height: number,colors: string[]) {
+    const GRD = ctx.createLinearGradient(0, 0, width, height);
+    if(colors.length === 1){
+        GRD.addColorStop(0, colors[0]);
+        GRD.addColorStop(1, colors[0]);
+    }
+    if(colors.length === 2){
+        GRD.addColorStop(0, colors[0]);
+        GRD.addColorStop(1, colors[1]);
+    }
+    if(colors.length === 3){
+        GRD.addColorStop(0, colors[0]);
+        GRD.addColorStop(0.5, colors[1]);
+        GRD.addColorStop(1, colors[2]);
+    }
+    ctx.setFillStyle(GRD)
 }
 const SetBarCodeType = {
     /**
@@ -169,17 +192,13 @@ class GraphicContentInit {
     borderSize: number = 0;
     paddingWidth: number = 0;
     ctx: UniApp.CanvasContext;
-    color: string;
-    backGroud: string;
     area: StrongCode.areaPars;
 
-    constructor (ctx: UniApp.CanvasContext,width: number,height: number,color: string,backGroud: string) {
+    constructor (ctx: UniApp.CanvasContext,width: number,height: number) {
         this.ctx = ctx;
         this.width = width;
         this.height = height;
         this.quiet = Math.round(this.width / 40);
-        this.color = color;
-        this.backGroud = backGroud;
         this.area = {
             width: width - this.paddingWidth * 2 - this.quiet * 2,
             height: height - this.borderSize * 2,
@@ -191,13 +210,12 @@ class GraphicContentInit {
     }
     
     fillFgRect(x: number,y: number, width: number, height: number) {
-		this.FILLRECT(x,y,width, height,this.color);
+		this.FILLRECT(x,y,width, height);
 	};
 	fillBgRect(x: number,y: number, width: number, height: number) {
-		this.FILLRECT(x,y, width, height,this.backGroud);
+		this.FILLRECT(x,y, width, height);
 	};
-	FILLRECT(x: number,y: number, width: number, height: number,color: string) {
-		this.ctx.setFillStyle(color);
+	FILLRECT(x: number,y: number, width: number, height: number) {
 		this.ctx.fillRect(x, y, width, height);
 	}
 }
