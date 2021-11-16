@@ -55,7 +55,7 @@ const RepaintCanvas = function (opt: StrongCode.BarCodePars, ctx: UniApp.CanvasC
     for (let i = 0; i < width; i++) {//开始生成二维码
         for (let j = 0; j < width; j++) {
             if (frame[j * width + i]) {
-                SetCodeType[opt.type || 'none'](ctx,px * (4 + i) + offset, px * (4 + j) + offset, px, px)
+                // SetCodeType[opt.type || 'none'](ctx,px * (4 + i) + offset, px * (4 + j) + offset, px, px)
                 ctx.fillRect(px * (4 + i) + offset, px * (4 + j) + offset, px, px);
             }
         }
