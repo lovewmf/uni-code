@@ -2,7 +2,8 @@ import {
     QRCodeInit,
     UNIT_CONVERSION,
     UtF16TO8,
-    SaveCodeImg
+    SaveCodeImg,
+    SetGradient
 } from '../common/support'
 
 /**
@@ -54,7 +55,7 @@ const RepaintCanvas = function (opt: StrongCode.BarCodePars, ctx: UniApp.CanvasC
     for (let i = 0; i < width; i++) {//开始生成二维码
         for (let j = 0; j < width; j++) {
             if (frame[j * width + i]) {
-                // SetCodeType[opt.type || 'none'](ctx,px * (4 + i) + offset, px * (4 + j) + offset, px, px)
+                SetCodeType[opt.type || 'none'](ctx,px * (4 + i) + offset, px * (4 + j) + offset, px, px)
                 ctx.fillRect(px * (4 + i) + offset, px * (4 + j) + offset, px, px);
             }
         }
@@ -79,6 +80,7 @@ const RepaintCanvas = function (opt: StrongCode.BarCodePars, ctx: UniApp.CanvasC
     });
 
 }
+
 /**
  * @method SetCodeType
  * @author wmf
@@ -98,7 +100,7 @@ const SetCodeType = {
     },
     // 自定义图片为码点
     'custom': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number) {
-        
+        ctx.drawImage('', x, y, w, h)
     },
     // 圆点码点
     'dots': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
@@ -114,20 +116,7 @@ const SetCodeType = {
  * @description 设置二维码颜色 支持渐变色
  */
 const SetColorCode = function (ctx: UniApp.CanvasContext,size: number,colors: string[]): void {
-    let GRD: UniApp.CanvasGradient = ctx.createLinearGradient(0, 0, size, 0);
-    if(colors.length === 1){
-        GRD.addColorStop(0, colors[0]);
-        GRD.addColorStop(1, colors[0]);
-    }
-    if(colors.length === 2){
-        GRD.addColorStop(0, colors[0]);
-        GRD.addColorStop(1, colors[1]);
-    }
-    if(colors.length === 3){
-        GRD.addColorStop(0, colors[0]);
-        GRD.addColorStop(0.5, colors[1]);
-        GRD.addColorStop(1, colors[2]);
-    }
+    const GRD = SetGradient(ctx,size,size,colors)
     ctx.setFillStyle(GRD)
 }
 /**
@@ -210,20 +199,7 @@ const SetImageType = {//none circle round
     const y: number = 0;
     const w: number = size;
     const h: number = size;
-    let GRD: UniApp.CanvasGradient = ctx.createLinearGradient(0, 0, size, 0);
-    if(colors.length === 1){
-        GRD.addColorStop(0, colors[0]);
-        GRD.addColorStop(1, colors[0]);
-    }
-    if(colors.length === 2){
-        GRD.addColorStop(0, colors[0]);
-        GRD.addColorStop(1, colors[1]);
-    }
-    if(colors.length === 3){
-        GRD.addColorStop(0, colors[0]);
-        GRD.addColorStop(0.5, colors[1]);
-        GRD.addColorStop(1, colors[2]);
-    }
+    const GRD = SetGradient(ctx,size,size,colors)
     ctx.save();
     ctx.setGlobalAlpha(border?.opacity || 1)
 	ctx.beginPath();
@@ -250,21 +226,8 @@ const SetImageType = {//none circle round
  * @description 在二维码上设置文本
  */
  const SetTextCode = function (ctx: UniApp.CanvasContext,size: number,text: StrongCode.CodeText): void {
-    let GRD: UniApp.CanvasGradient = ctx.createLinearGradient(0, 0, size, 0);
     let colors = text.color || ["#FFFFFF"];
-    if(colors.length === 1){
-        GRD.addColorStop(0, colors[0]);
-        GRD.addColorStop(1, colors[0]);
-    }
-    if(colors.length === 2){
-        GRD.addColorStop(0, colors[0]);
-        GRD.addColorStop(1, colors[1]);
-    }
-    if(colors.length === 3){
-        GRD.addColorStop(0, colors[0]);
-        GRD.addColorStop(0.5, colors[1]);
-        GRD.addColorStop(1, colors[2]);
-    }
+    const GRD = SetGradient(ctx,size,size,colors)
     ctx.restore();
     ctx.setGlobalAlpha(text?.opacity || 1)
     ctx.setTextAlign('center');//'left'、'center'、'right'

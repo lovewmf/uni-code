@@ -50,6 +50,7 @@ declare namespace StrongCode {
         type?: string,
         size: string | number,
         code: string,
+        src?: string,
         level?: number,
         bgColor?: string,
         text?: CodeText,

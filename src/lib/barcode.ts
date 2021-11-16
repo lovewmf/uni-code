@@ -1,6 +1,7 @@
 import {
     UNIT_CONVERSION, 
-    SaveCodeImg
+    SaveCodeImg,
+    SetGradient
 } from '../common/support'
 
 import { BarCode128, BarCode39 } from '../codeType'
@@ -58,20 +59,7 @@ export const BarCodeCanvas = function (opt: StrongCode.OperationCodePars, ctx: U
 }
 //设置条形码颜色渐变色
 const SetBarCodeColors = function (ctx: UniApp.CanvasContext,width: number,height: number,colors: string[]) {
-    const GRD = ctx.createLinearGradient(0, 0, width, height);
-    if(colors.length === 1){
-        GRD.addColorStop(0, colors[0]);
-        GRD.addColorStop(1, colors[0]);
-    }
-    if(colors.length === 2){
-        GRD.addColorStop(0, colors[0]);
-        GRD.addColorStop(1, colors[1]);
-    }
-    if(colors.length === 3){
-        GRD.addColorStop(0, colors[0]);
-        GRD.addColorStop(0.5, colors[1]);
-        GRD.addColorStop(1, colors[2]);
-    }
+    const GRD = SetGradient(ctx,width,height,colors)
     ctx.setFillStyle(GRD)
 }
 const SetBarCodeType = {
