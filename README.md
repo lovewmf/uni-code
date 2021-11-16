@@ -21,6 +21,7 @@ qrc: {// 二维码
 	size: 460, // 二维码大小
 	level: 4, //纠错等级 0～4
 	type: 'none',
+	src: '/static/35.png',//画布背景
 	bgColor: '#FFFFFF', //二维码背景色 默认白色
 	border: {
 		opacity: 1,//边框透明度 0~1 默认1

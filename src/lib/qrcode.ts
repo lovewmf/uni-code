@@ -38,15 +38,15 @@ export const WidgetCode = function(opt: StrongCode.BarCodePars,callback?: Functi
 }
 const RepaintCanvas = function (opt: StrongCode.BarCodePars, ctx: UniApp.CanvasContext, frame: number[], width: number, callback?: Function) {
 
-    const SIZE: number = UNIT_CONVERSION(opt.size)
-    const px: number = Math.round(SIZE / (width + 8));
-    const roundedSize: number = px * (width + 8);
-    const offset: number = Math.floor((SIZE - roundedSize) / 2);
+    const SIZE: number = UNIT_CONVERSION(opt.size); //画布大小
+    const padding: number = UNIT_CONVERSION(opt.padding || 0) || 0;// 画布内边距 默认 0 单位rpx
+    const px: number = Number((SIZE / (width + padding)).toFixed(2));
+    const offset: number = Math.floor((SIZE -  px * width) / 2);
 
     ctx.clearRect(0, 0, SIZE, SIZE);
     ctx.setFillStyle(opt.bgColor || '#FFFFFF');//二维码背景色
     ctx.fillRect(0, 0, SIZE, SIZE);//设置画布大小
-
+    opt.src ? ctx.drawImage(opt.src,0,0,SIZE,SIZE) : false;// 设置画布背景
     //绘制二维码颜色 支持渐变
     opt.color ? SetColorCode(ctx,SIZE,opt.color) : ctx.setFillStyle("#000000");
     // 绘制二维码边框 支持渐变 透明度
@@ -56,7 +56,7 @@ const RepaintCanvas = function (opt: StrongCode.BarCodePars, ctx: UniApp.CanvasC
         for (let j = 0; j < width; j++) {
             if (frame[j * width + i]) {
                 // SetCodeType[opt.type || 'none'](ctx,px * (4 + i) + offset, px * (4 + j) + offset, px, px)
-                ctx.fillRect(px * (4 + i) + offset, px * (4 + j) + offset, px, px);
+                ctx.fillRect(px * i + offset, px * j + offset , px, px);
             }
         }
   
