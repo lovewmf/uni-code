@@ -234,6 +234,7 @@ const SetImageType = {//none circle round
 	ctx.setTextBaseline('middle');//可选值 'top'、'bottom'、'middle'、'normal'
     ctx.font = text?.font || "normal 20px system-ui",
     ctx.setFillStyle(GRD)
+
 	ctx.fillText(text.content, size/2, size/2);
     ctx.setGlobalAlpha(1)
 }

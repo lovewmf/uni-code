@@ -91,35 +91,35 @@ export const SetGradient = function (ctx: UniApp.CanvasContext,width: number,hei
     }
     if(colors.length === 5){
         GRD.addColorStop(0, colors[0]);
-        GRD.addColorStop(0.3, colors[1]);
+        GRD.addColorStop(0.35, colors[1]);
         GRD.addColorStop(0.6, colors[2]);
         GRD.addColorStop(0.8, colors[3]);
         GRD.addColorStop(1, colors[4]);
     }
     if(colors.length === 6){
         GRD.addColorStop(0, colors[0]);
-        GRD.addColorStop(0.2, colors[1]);
-        GRD.addColorStop(0.4, colors[2]);
-        GRD.addColorStop(0.6, colors[3]);
-        GRD.addColorStop(0.8, colors[4]);
+        GRD.addColorStop(0.25, colors[1]);
+        GRD.addColorStop(0.45, colors[2]);
+        GRD.addColorStop(0.65, colors[3]);
+        GRD.addColorStop(0.85, colors[4]);
         GRD.addColorStop(1, colors[5]);
     }
     if(colors.length === 7){
         GRD.addColorStop(0, colors[0]);
-        GRD.addColorStop(0.1, colors[1]);
-        GRD.addColorStop(0.3, colors[2]);
-        GRD.addColorStop(0.4, colors[3]);
-        GRD.addColorStop(0.6, colors[4]);
-        GRD.addColorStop(0.7, colors[5]);
+        GRD.addColorStop(0.15, colors[1]);
+        GRD.addColorStop(0.35, colors[2]);
+        GRD.addColorStop(0.45, colors[3]);
+        GRD.addColorStop(0.65, colors[4]);
+        GRD.addColorStop(0.85, colors[5]);
         GRD.addColorStop(1, colors[6]);
     }
     if(colors.length === 8){
         GRD.addColorStop(0, colors[0]);
         GRD.addColorStop(0.1, colors[1]);
-        GRD.addColorStop(0.2, colors[2]);
-        GRD.addColorStop(0.4, colors[3]);
-        GRD.addColorStop(0.6, colors[4]);
-        GRD.addColorStop(0.8, colors[5]);
+        GRD.addColorStop(0.25, colors[2]);
+        GRD.addColorStop(0.45, colors[3]);
+        GRD.addColorStop(0.65, colors[4]);
+        GRD.addColorStop(0.85, colors[5]);
         GRD.addColorStop(0.9, colors[6]);
         GRD.addColorStop(1, colors[7]);
     }
@@ -143,7 +143,7 @@ export const SetGradient = function (ctx: UniApp.CanvasContext,width: number,hei
         GRD.addColorStop(0.5, colors[5]);
         GRD.addColorStop(0.6, colors[6]);
         GRD.addColorStop(0.7, colors[7]);
-        GRD.addColorStop(0.8, colors[8]);
+        GRD.addColorStop(0.85, colors[8]);
         GRD.addColorStop(1, colors[9]);
     }
     return GRD

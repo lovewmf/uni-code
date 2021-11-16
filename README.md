@@ -22,7 +22,7 @@ qrc: {// 二维码
 	level: 4, //纠错等级 0～4
 	type: 'none',
 	src: '/static/35.png',//画布背景
-	bgColor: '#FFFFFF', //二维码背景色 默认白色
+	bgColor: '#FFFFFF', //二维码背景色 默认白色 transparent 透明
 	border: {
 		opacity: 1,//边框透明度 0~1 默认1
 		degree: 15,//圆角度数 默认5
