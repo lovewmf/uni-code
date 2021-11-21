@@ -11,18 +11,32 @@ import {ADELTA, VPAT,fmtword, ECBLOCKS, GLOG, GEXP} from './metadata'
 }
 /**
  * @author wmf❤洛尘
+ * @method getTimeDate
+ * @description 获取当前日期
+ * @returns YY-MM-DD HH:hh:mm
+ */
+export const getTimeDate = function(): string {
+   const date: Date = new Date();
+   const year: string = date.toLocaleDateString().replace('/','-');
+   const hour: string = date.toTimeString().slice(0,8);
+   return `${year} ${hour}`
+}
+  
+/**
+ * @author wmf❤洛尘
  * @method UtF16TO8
  * @description 汉字编码
  * @param code 
  * @returns 编码后的字符串
  */
-export const UtF16TO8 = function (code: string): string{
+export const UtF16TO8 = function (code: string | number): string{
+    const CODE = code.toString();
     let out: string = '';
     let c: number = 0;
-	for (let i = 0; i < code.length; i++) {
-		c = code.charCodeAt(i);
+	for (let i = 0; i < CODE.length; i++) {
+		c = CODE.charCodeAt(i);
 		if ((c >= 0x0001) && (c <= 0x007F)) {
-			out += code.charAt(i);
+			out += CODE.charAt(i);
 		} else if (c > 0x07FF) {
 			out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F));
 			out += String.fromCharCode(0x80 | ((c >> 6) & 0x3F));
@@ -67,7 +81,88 @@ export const SaveCodeImg = function(k: StrongCode.SaveCanvasPars): object{
         }
     })
 }
+// 颜色渐变设置 后期优化此方法
+export const SetGradient = function (ctx: UniApp.CanvasContext,width: number,height: number,colors: string[]): UniApp.CanvasGradient {
+    let GRD: UniApp.CanvasGradient = ctx.createLinearGradient(0, 0, width, height);
+    if(colors.length === 1){
+        GRD.addColorStop(0, colors[0]);
+        GRD.addColorStop(1, colors[0]);
+    }
+    if(colors.length === 2){
+        GRD.addColorStop(0, colors[0]);
+        GRD.addColorStop(1, colors[1]);
+    }
+    if(colors.length === 3){
+        GRD.addColorStop(0, colors[0]);
+        GRD.addColorStop(0.5, colors[1]);
+        GRD.addColorStop(1, colors[2]);
+    }
+    if(colors.length === 4){
+        GRD.addColorStop(0, colors[0]);
+        GRD.addColorStop(0.35, colors[1]);
+        GRD.addColorStop(0.7, colors[2]);
+        GRD.addColorStop(1, colors[3]);
+    }
+    if(colors.length === 5){
+        GRD.addColorStop(0, colors[0]);
+        GRD.addColorStop(0.35, colors[1]);
+        GRD.addColorStop(0.6, colors[2]);
+        GRD.addColorStop(0.8, colors[3]);
+        GRD.addColorStop(1, colors[4]);
+    }
+    if(colors.length === 6){
+        GRD.addColorStop(0, colors[0]);
+        GRD.addColorStop(0.25, colors[1]);
+        GRD.addColorStop(0.45, colors[2]);
+        GRD.addColorStop(0.65, colors[3]);
+        GRD.addColorStop(0.85, colors[4]);
+        GRD.addColorStop(1, colors[5]);
+    }
+    if(colors.length === 7){
+        GRD.addColorStop(0, colors[0]);
+        GRD.addColorStop(0.15, colors[1]);
+        GRD.addColorStop(0.35, colors[2]);
+        GRD.addColorStop(0.45, colors[3]);
+        GRD.addColorStop(0.65, colors[4]);
+        GRD.addColorStop(0.85, colors[5]);
+        GRD.addColorStop(1, colors[6]);
+    }
+    if(colors.length === 8){
+        GRD.addColorStop(0, colors[0]);
+        GRD.addColorStop(0.1, colors[1]);
+        GRD.addColorStop(0.25, colors[2]);
+        GRD.addColorStop(0.45, colors[3]);
+        GRD.addColorStop(0.65, colors[4]);
+        GRD.addColorStop(0.85, colors[5]);
+        GRD.addColorStop(0.9, colors[6]);
+        GRD.addColorStop(1, colors[7]);
+    }
+    if(colors.length === 9){
+        GRD.addColorStop(0, colors[0]);
+        GRD.addColorStop(0.2, colors[1]);
+        GRD.addColorStop(0.3, colors[2]);
+        GRD.addColorStop(0.5, colors[3]);
+        GRD.addColorStop(0.6, colors[4]);
+        GRD.addColorStop(0.7, colors[5]);
+        GRD.addColorStop(0.8, colors[6]);
+        GRD.addColorStop(0.9, colors[7]);
+        GRD.addColorStop(1, colors[8]);
+    }
+    if(colors.length >= 10){
+        GRD.addColorStop(0, colors[0]);
+        GRD.addColorStop(0.1, colors[1]);
+        GRD.addColorStop(0.2, colors[2]);
+        GRD.addColorStop(0.3, colors[3]);
+        GRD.addColorStop(0.4, colors[4]);
+        GRD.addColorStop(0.5, colors[5]);
+        GRD.addColorStop(0.6, colors[6]);
+        GRD.addColorStop(0.7, colors[7]);
+        GRD.addColorStop(0.85, colors[8]);
+        GRD.addColorStop(1, colors[9]);
+    }
+    return GRD
 
+}
 /**
  * @author wmf❤洛尘
  * @method QRCodeInit

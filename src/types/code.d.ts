@@ -44,17 +44,34 @@ declare namespace StrongCode {
     }
     /**
      * @description 生成二维码参数
+     * @param id canvasID 或者实列
+     * @param type 二维码绘制码点类型 可以使用自定义图片绘制
+     * @param size 画布canvas大小单位rpx
+     * @param code 生成二维码的code
+     * @param eyeSrc 如果 type设置为 custom 则次属性必传 码眼图片地址
+     * @param src 二维码背景图片地址
+     * @param padding 二维码内边距 默认0
+     * @param level 纠错等级 默认4
+     * @param bgColor 画布背景色 默认 #FFFFFF
+     * @param text 要绘制的文字参数 object
+     * @param color 二维码绘制的颜色 默认#000000 数组 可以传入多个颜色渐变 默认最多10种颜色
+     * @param img 二维码中间log图片配置
+     * @param border 二维码边框配置 
+     * @param ctx 自定义组件时需要 传this
      */
     interface BarCodePars {
         id: string | UniApp.CanvasContext,
+        type?: string,
         size: string | number,
         code: string,
+        src?: string,
+        eyeSrc?: string,
+        padding?: number,
         level?: number,
         bgColor?: string,
         text?: CodeText,
         color?: string[],
         img?: CodeImg,
-        iconSize?: number,
         border?: BorderCode,
         ctx: object
     }
@@ -79,7 +96,7 @@ declare namespace StrongCode {
         type?: string,
         code: string,
         bgColor?: string,
-        color?: string,
+        color?: string[],
         ctx: object
     }
     /**
