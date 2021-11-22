@@ -7,9 +7,12 @@
 * */
 import { OperationCode } from './lib/barcode'
 import { WidgetCode } from './lib/qrcode'
+ import { SaveCodeImg } from './common/support'
 
 // 条形码
 export const BarCode = OperationCode;
 
 // 二维码
 export const QRCode = WidgetCode;
+
+export const GetCodeImg = SaveCodeImg;

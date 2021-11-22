@@ -26,6 +26,10 @@ export const WidgetCode = function(opt: StrongCode.BarCodePars,callback?: Functi
     const BARCODE: QRCodeInit = new QRCodeInit(opt.level);
     // 二维码code转码 主要针对纯汉字
     const CODE: string = UtF16TO8(opt.code)
+    if (!CODE) {
+        console.warn("二维码code转换错误");
+        return
+    }
     // 生成二维码所需要的数据
     const frame: number[] = BARCODE.Genframe(CODE);
 
@@ -41,9 +45,8 @@ export const WidgetCode = function(opt: StrongCode.BarCodePars,callback?: Functi
 
 }
 const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: UniApp.CanvasContext, frame: number[], width: number, callback?: Function) {
-
     const SIZE: number = UNIT_CONVERSION(opt.size); //画布大小
-    const padding: number = UNIT_CONVERSION(opt.padding || 0) || 0;// 画布内边距 默认 0 单位rpx
+    const padding: number = ( UNIT_CONVERSION(opt.padding || 0) || 0) + (opt.border ? opt.border.lineWidth || 5 : 0);// 画布内边距 默认 0 单位rpx
     const px: number = Number((SIZE / (width + padding)).toFixed(2));
     const offset: number = Math.floor((SIZE -  px * width) / 2);
 
