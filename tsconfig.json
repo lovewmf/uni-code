@@ -16,7 +16,7 @@
         "experimentalDecorators": true, // 启动装饰器
         "esModuleInterop": true,
         "declarationMap": false, // 生成定义sourceMapss
-        "lib": ["es5", "es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "es2021", "dom"],  // 导入库类型定义
+        "lib": ["es5","esnext", "es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "es2021", "dom"],  // 导入库类型定义
         "types": [// 导入指定类型包
           "@dcloudio/types",
           "./src/types/code"

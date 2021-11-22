@@ -5,10 +5,9 @@ import {
     getTimeDate
 } from '../common/support'
 
-import { BarCode128, BarCode39 } from '../codeType'
+import { BarCode128 } from '../codeType'
 
 import {PATTERNS} from '../common/metadata'
-import { CODE39 } from '../codeType/CODE39';
 
 /**
 * @author wmf❤洛尘 
