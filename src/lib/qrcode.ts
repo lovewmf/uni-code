@@ -92,6 +92,11 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
 
 }
 
+type codeGroup = 'none' | 'starry' | 'dots'| 'custom';
+interface CodeTypeValue {
+    (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number): void
+}
+type CodeType = Record<codeGroup, CodeTypeValue>
 /**
  * @method SetCodeType
  * @author wmf
@@ -99,8 +104,7 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
  * @LastEditTime 2021-11-15
  * @description 设置二维码码点
  */
-// @ts-ignore
-const SetCodeType = {
+const SetCodeType: CodeType = {
     // 正常码点
     'none': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
         ctx.fillRect(x,y,w,h);
@@ -130,12 +134,19 @@ const SetColorCode = function (ctx: UniApp.CanvasContext,size: number,colors: st
     const GRD = SetGradient(ctx,size,size,colors)
     ctx.setFillStyle(GRD)
 }
+
+
+type imgGroup = 'none' | 'circle' | 'round';
+interface ImageTypeValue {
+    (ctx:UniApp.CanvasContext,size: number, img: StrongCode.CodeImg): void
+}
+type ImageType = Record<imgGroup, ImageTypeValue>
 /**
  * @author wmf
  * @method SetImageType
  * @description 二维码中间log绘制
  */
-const SetImageType = {//none circle round
+const SetImageType: ImageType = {//none circle round
     'none': function SetImageCode(ctx: UniApp.CanvasContext,size: number, img: StrongCode.CodeImg){
         const iconSize = img?.size || 30
         const width =  Number(((size - iconSize) / 2).toFixed(2));

@@ -135,16 +135,6 @@ declare namespace StrongCode {
     /**
      * @description 绘制条形码所需参数
      */
-    interface  Provider {
-        ANY: number,
-        AB: number,
-        A: number,
-        B: number,
-        C: number
-    }
-    /**
-     * @description 绘制条形码所需参数
-     */
     interface  PCodeOpt {
         CHAR_TILDE: number
     }

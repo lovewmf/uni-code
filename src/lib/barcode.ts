@@ -69,7 +69,14 @@ const SetBarCodeColors = function (ctx: UniApp.CanvasContext,width: number,heigh
     const GRD = SetGradient(ctx,width,height,colors)
     ctx.setFillStyle(GRD)
 }
-const SetBarCodeType = {
+
+type codeGroup = 'CODE128' | 'CODE39' | 'EAN13' | 'UPCE' | 'UPCE' | 'UPC' | 'ITF' | 'ITF14' | 'MSI' | 'Codabar' | 'Pharmacode';
+interface CodeTypeValue {
+    (code: string, gc: GraphicContentInit,height: number): void
+}
+type BarCodeType = Record<codeGroup, CodeTypeValue>
+
+const SetBarCodeType: BarCodeType = {
     /**
      * @method CODE128
      * @param code 条形码的值

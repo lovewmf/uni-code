@@ -12,12 +12,12 @@
         currcs: CODESET.C
     };
     let bytes = GetBytes(code);
-    let index = bytes[0] == CHAR_TILDE ? 1 : 0;
+    let index = bytes[0] == CHAR_TILDE_TYPE.CHAR_TILDE ? 1 : 0;
 
     const perhapsCodeC = function (bytes: number[], codeset: number): number {
         for (let i = 0; i < bytes.length; i++) {
             const b = bytes[i]
-            if ((b < 48 || b > 57) && b != CHAR_TILDE)
+            if ((b < 48 || b > 57) && b != CHAR_TILDE_TYPE.CHAR_TILDE)
                 return codeset;
         }
         return CODESET.C;
@@ -28,16 +28,16 @@
         if (charCompatible(chr1, currcs)) {
             if (currcs == CODESET.C) {
                 if (chr2 == -1) {
-                    shifter = SET_CODEB;
+                    shifter = CHAR_TILDE_TYPE.SET_CODEB;
                     currcs = CODESET.B;
                 }
                 else if ((chr2 != -1) && !charCompatible(chr2, currcs)) {
                     if (charCompatible(chr2, CODESET.A)) {
-                        shifter = SET_CODEA;
+                        shifter = CHAR_TILDE_TYPE.SET_CODEA;
                         currcs = CODESET.A;
                     }
                     else {
-                        shifter = SET_CODEB;
+                        shifter = CHAR_TILDE_TYPE.SET_CODEB;
                         currcs = CODESET.B;
                     }
                 }
@@ -47,17 +47,17 @@
             if ((chr2 != -1) && !charCompatible(chr2, currcs)) {
                 switch (currcs) {
                     case CODESET.A:
-                        shifter = SET_CODEB;
+                        shifter = CHAR_TILDE_TYPE.SET_CODEB;
                         currcs = CODESET.B;
                         break;
                     case CODESET.B:
-                        shifter = SET_CODEA;
+                        shifter = CHAR_TILDE_TYPE.SET_CODEA;
                         currcs = CODESET.A;
                         break;
                 }
             }
             else {
-                shifter = SET_SHIFT;
+                shifter = CHAR_TILDE_TYPE.SET_SHIFT;
             }
         }
         if (shifter != -1) {
@@ -84,13 +84,13 @@
 
     switch (barc.currcs) {
         case CODESET.A:
-            codes.push(SET_STARTA);
+            codes.push(CHAR_TILDE_TYPE.SET_STARTA);
             break;
         case CODESET.B:
-            codes.push(SET_STARTB);
+            codes.push(CHAR_TILDE_TYPE.SET_STARTB);
             break;
         default:
-            codes.push(SET_STARTC);
+            codes.push(CHAR_TILDE_TYPE.SET_STARTC);
             break;
     }
     for (let i = 0; i < bytes.length; i++) {
@@ -110,7 +110,7 @@
         checksum += (weight * codes[weight]);
     }
     codes.push(checksum % 103);
-    codes.push(SET_STOP);
+    codes.push(CHAR_TILDE_TYPE.SET_STOP);
     return codes;
 }
 /**
@@ -176,24 +176,27 @@ export const codeSetAllowedFor = function (chr: number): number {
         return chr < 32 ? CODESET.A : CODESET.B;
     }
 }
-export const CHAR_TILDE: number = 126;
-export const CODE_FNC1: number = 102;
-export const SET_STARTA: number = 103;
-export const SET_STARTB: number = 104;
-export const SET_STARTC: number = 105;
-export const SET_SHIFT: number = 98;
-export const SET_CODEA: number = 101;
-export const SET_CODEB: number = 100;
-export const SET_STOP: number = 106;
+
+export const enum CHAR_TILDE_TYPE {
+    CHAR_TILDE = 126,
+    CODE_FNC1 = 102,
+    SET_STARTA = 103,
+    SET_STARTB = 104,
+    SET_STARTC = 105,
+    SET_SHIFT = 98,
+    SET_CODEA = 101,
+    SET_CODEB = 100,
+    SET_STOP = 106
+}
 
 
 export const REPLACE_CODES: StrongCode.PCodeOpt = {
-    CHAR_TILDE: CODE_FNC1 //GS1-128
+    CHAR_TILDE: CHAR_TILDE_TYPE.CODE_FNC1 //GS1-128
 }
-export const CODESET: StrongCode.Provider = {
-    ANY: 1,
-    AB: 2,
-    A: 3,
-    B: 4,
-    C: 5
+export const enum CODESET {
+    ANY= 1,
+    AB = 2,
+    A = 3,
+    B = 4,
+    C = 5
 };
