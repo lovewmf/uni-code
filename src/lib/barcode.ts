@@ -51,12 +51,12 @@ export const BarCodeCanvas = function (time: number,opt: StrongCode.OperationCod
             ...res,
             createTime: getTimeDate(),
             takeUpTime: ((new Date()).getTime()) - time, 
-            img: await SaveCodeImg({
+            img: res.errMsg == "drawCanvas:ok" ? await SaveCodeImg({
                 width: opt.width,
                 height: opt.height,
                 id: opt.id,
                 ctx: opt.ctx || null
-            }),
+            }) : null,
             id: Object.prototype.toString.call(opt.id) == '[object String]' ? opt.id : "nvue"
         }) : null;
     });

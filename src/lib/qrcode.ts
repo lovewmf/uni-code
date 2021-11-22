@@ -20,13 +20,15 @@ export const WidgetCode = function(opt: StrongCode.BarCodePars,callback?: Functi
         return
     }
     let CTX: UniApp.CanvasContext;
+    //二维码开始绘制时间记录开始
     const timeStar: number = new Date().getTime();
     //实例化QRCodeInit
     const BARCODE: QRCodeInit = new QRCodeInit(opt.level);
     // 二维码code转码 主要针对纯汉字
     const CODE: string = UtF16TO8(opt.code)
     // 生成二维码所需要的数据
-    const frame: number[] = BARCODE.Genframe(CODE)
+    const frame: number[] = BARCODE.Genframe(CODE);
+
     const width: number = BARCODE.getWidth();
 
     if (Object.prototype.toString.call(opt.id) == '[object String]') {
@@ -197,7 +199,7 @@ const SetImageType = {//none circle round
  */
 
  const SetBorderCode = function(ctx: UniApp.CanvasContext,size: number,border?: StrongCode.BorderCode): void {
-    const colors: string[] = border?.color || ['#F27121','#8A2387'];
+    const colors: string[] = border?.color || ['#000000'];
     const r: number = border?.degree || 5;
     const x: number = 0;
     const y: number = 0;
