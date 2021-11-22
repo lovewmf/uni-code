@@ -1,6 +1,6 @@
 {
   "name": "@uni-ui/code-plugs",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "条形码 二维码",
   "main": "dist/code.min.js",
   "scripts": {
