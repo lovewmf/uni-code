@@ -84,6 +84,8 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
                 id: opt.id,
                 ctx: opt.ctx || null
             }) : null,
+            code: opt.code,
+            size:  UNIT_CONVERSION(opt.size),
             id: Object.prototype.toString.call(opt.id) == '[object String]' ? opt.id : "nvue"
         }) : null;
     });

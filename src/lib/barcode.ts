@@ -8,6 +8,7 @@ import {
 import { BarCode128, BarCode39 } from '../codeType'
 
 import {PATTERNS} from '../common/metadata'
+import { CODE39 } from '../codeType/CODE39';
 
 /**
 * @author wmf❤洛尘 
@@ -57,6 +58,9 @@ export const BarCodeCanvas = function (time: number,opt: StrongCode.OperationCod
                 id: opt.id,
                 ctx: opt.ctx || null
             }) : null,
+            code: opt.code,
+            with:  UNIT_CONVERSION(opt.width),
+            height:  UNIT_CONVERSION(opt.height),
             id: Object.prototype.toString.call(opt.id) == '[object String]' ? opt.id : "nvue"
         }) : null;
     });
@@ -79,12 +83,12 @@ const SetBarCodeType = {
         let barWeight = gc.area.width / ((CodeNum.length - 3) * 11 + 35);
         let x: number = gc.area.left;
         const y = gc.area.top;
+        // const barH = height - y - this.border
         const barH = height - gc.area.top;
         for (let i = 0; i < CodeNum.length; i++) {
             const c = CodeNum[i];
             for (let bar = 0; bar < 8; bar += 2) {
                 const barW = PATTERNS[c][bar] * barWeight;
-                // const barH = height - y - this.border
                 const spcW = PATTERNS[c][bar + 1] * barWeight;
                 if (barW > 0) {
                     gc.fillFgRect(x, y, barW, barH);
@@ -103,29 +107,68 @@ const SetBarCodeType = {
      * @description 条形码类型 CODE39
      */
     "CODE39": function CODE39 (code: string, gc: GraphicContentInit, height: number): void {
-        new BarCode39(code);
-        // const binary = Code39.encode()
-        console.error("条形码编码类型：CODE39暂未实现");
-        
-        // let x: number = gc.area.left;
-        // const y = gc.area.top;
-		// for(let i = 0; i < binary.length; i++){
-        //     const c = Number(binary[i]);
-		// 	x = i * 2;
-		// 	if(c === 1){
-        //         gc.fillFgRect(x, y,5, height);
-		// 	}
-		// }
+        const CodeNum: number[] = BarCode128(code);
+        let barWeight = gc.area.width / ((CodeNum.length - 3) * 11 + 35);
+        let x: number = gc.area.left;
+        const y = gc.area.top;
+        // const barH = height - y - this.border
+        const barH = height - gc.area.top;
+        for (let i = 0; i < CodeNum.length; i++) {
+            const c = CodeNum[i];
+            for (let bar = 0; bar < 8; bar += 2) {
+                const barW = PATTERNS[c][bar] * barWeight;
+                const spcW = PATTERNS[c][bar + 1] * barWeight;
+                if (barW > 0) {
+                    gc.fillFgRect(x, y, barW, barH);
+                }
+
+                x += barW + spcW;
+            }
+        }
     },
     /**
-     * @method EAN
+     * @method EAN13
      * @param code 条形码的值
      * @param gc 
      * @param height 
      * @todo 待实现
-     * @description 条形码类型 EAN
+     * @description 条形码类型 EAN2
      */
-    "EAN": function EAN (code: string, gc: GraphicContentInit, height: number): void {
+    "EAN13": function EAN13 (code: string, gc: GraphicContentInit, height: number): void {
+        if(code.search(/^[0-9]{12}$/) === -1){
+            console.error("条形码编码：code不符合EAN13规范");
+            return
+        }
+        console.error("条形码编码类型：EAN暂未实现");
+    },
+    /**
+     * @method UPCE
+     * @param code 条形码的值
+     * @param gc 
+     * @param height 
+     * @todo 待实现
+     * @description 条形码类型 UPCE
+     */
+     "UPCE": function UPCE (code: string, gc: GraphicContentInit, height: number): void {
+        if(code.search(/^[0-9]{6}$/) === -1){
+            console.error("条形码编码：code不符合UPCE规范");
+            return
+        }
+        console.error("条形码编码类型：EAN暂未实现");
+    },
+    /**
+     * @method UPC
+     * @param code 条形码的值
+     * @param gc 
+     * @param height 
+     * @todo 待实现
+     * @description 条形码类型 UPC
+     */
+     "UPC": function UPC (code: string, gc: GraphicContentInit, height: number): void {
+        if(code.search(/^[0-9]{1}$/) === -1){
+            console.error("条形码编码：code不符合UPC规范");
+            return
+        }
         console.error("条形码编码类型：EAN暂未实现");
     },
     /**
@@ -137,7 +180,26 @@ const SetBarCodeType = {
      * @description 条形码类型 ITF
      */
     "ITF": function ITF (code: string, gc: GraphicContentInit, height: number): void {
+        if(code.search(/^([0-9]{2})+$/) === -1){
+            console.error("条形码编码：code不符合ITF规范");
+            return
+        }
         console.error("条形码编码类型：ITF暂未实现");
+    },
+    /**
+     * @method ITF14
+     * @param code 条形码的值
+     * @param gc 
+     * @param height 
+     * @todo 待实现
+     * @description 条形码类型 ITF14
+     */
+    "ITF14": function ITF14 (code: string, gc: GraphicContentInit, height: number): void {
+        if(code.search(/^[0-9]{14}$/) === -1){
+            console.error("条形码编码：code不符合ITF14规范");
+            return
+        }
+        console.error("条形码编码类型：ITF14暂未实现");
     },
     /**
      * @method MSI
@@ -148,6 +210,10 @@ const SetBarCodeType = {
      * @description 条形码类型 MSI
      */
     "MSI": function MSI (code: string, gc: GraphicContentInit, height: number): void {
+        if(code.search(/^[0-9]+$/) === -1){
+            console.error("条形码编码：code不符合MSI规范");
+            return
+        }
         console.error("条形码编码类型：MSI暂未实现");
     },
     /**
@@ -159,6 +225,10 @@ const SetBarCodeType = {
      * @description 条形码类型 Codabar
      */
     "Codabar": function Codabar (code: string, gc: GraphicContentInit, height: number): void {
+        if(code.search(/^[A-D][0-9\-\$\:\.\+\/]+[A-D]$/) === -1){
+            console.error("条形码编码：code不符合Codabar规范");
+            return
+        }
         console.error("条形码编码类型：Codabar暂未实现");
     },
     /**
@@ -170,6 +240,15 @@ const SetBarCodeType = {
      * @description 条形码类型 Pharmacode
      */
     "Pharmacode": function Pharmacode (code: string, gc: GraphicContentInit, height: number): void {
+
+        if(isNaN(parseInt(code,10))){
+            console.error("条形码编码：code不符合Pharmacode类型");
+            return
+        }
+        if(!(Number(code) >= 3 && Number(code) <= 131070)){
+            console.error("条形码编码：code不符合Pharmacode类型");
+            return
+        }
         console.error("条形码编码类型：Pharmacode暂未实现");
     }
 }

@@ -12,7 +12,7 @@ bar: {//条形码
 	code: 'E01181016286106',
 	color: ['#45B649','#00c3ff', '#ee0979'], // 条形码的颜色 不传 默认黑色支持颜色渐变
 	bgColor: '#FFFFFF', // 背景色 不传 默认白色
-    type: 'CODE128', //条码类型 默认CODE128 可选值 CODE39 EAN ITF MSI Codabar Pharmacode
+    type: 'CODE128', //条码类型 默认CODE128 可选值 CODE39 UPCE UPC EAN13 ITF ITF14 MSI Codabar Pharmacode
 	width: 670, // 宽度
 	height: 100 // 高度
 },

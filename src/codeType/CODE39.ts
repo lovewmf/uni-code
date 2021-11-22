@@ -5,7 +5,7 @@ export class CODE39 {
     private code: string
 
     constructor(codes: string){
-		this.code = codes;
+		this.code = codes.toUpperCase();
 	}
 	encode(): string{
 		let result = getEncoding("*");
