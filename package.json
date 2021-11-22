@@ -1,6 +1,6 @@
 {
   "name": "@uni-ui/code-plugs",
-  "version": "2.0.1",
+  "version": "2.0.0",
   "description": "条形码 二维码",
   "main": "dist/code.wmf.min.js",
   "scripts": {
@@ -19,6 +19,7 @@
   "author": "wmf",
   "license": "ISC",
   "devDependencies": {
+    "rollup": "^2.57.0",
     "@babel/core": "^7.15.5",
     "@babel/preset-env": "^7.15.6",
     "@dcloudio/types": "^2.5.12",
@@ -26,8 +27,5 @@
     "rollup-plugin-typescript2": "^0.30.0",
     "rollup-plugin-uglify": "^6.0.4",
     "typescript": "^4.4.3"
-  },
-  "dependencies": {
-    "rollup": "^2.57.0"
   }
 }
