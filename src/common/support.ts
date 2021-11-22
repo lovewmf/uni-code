@@ -17,7 +17,7 @@ import {ADELTA, VPAT,fmtword, ECBLOCKS, GLOG, GEXP} from './metadata'
  */
 export const getTimeDate = function(): string {
    const date: Date = new Date();
-   const year: string = date.toLocaleDateString().replace('/','-');
+   const year: string = date.toLocaleDateString().replaceAll('/','-');
    const hour: string = date.toTimeString().slice(0,8);
    return `${year} ${hour}`
 }
