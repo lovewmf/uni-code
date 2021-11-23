@@ -232,7 +232,6 @@ const SetImageType: ImageType = {//none circle round
 	ctx.arcTo(x, y + h, x, y, r);
 	ctx.arcTo(x, y, x + w, y, r);
     ctx.closePath();
-    ctx.restore()
 	ctx.setLineWidth(border?.lineWidth || 5)
 	ctx.setStrokeStyle(GRD); // 设置绘制圆形边框的颜色
 	ctx.stroke();
