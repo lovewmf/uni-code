@@ -6,6 +6,12 @@ npm run install //安装依赖
 npm run build // 打包
 
 ```
+## 示例地址
+
+`https://ext.dcloud.net.cn/plugin?id=4662`
+# 预览
+
+# 参数
 
 ```js
 bar: {//条形码
