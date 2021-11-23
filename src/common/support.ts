@@ -6,7 +6,7 @@ import {ADELTA, VPAT,fmtword, ECBLOCKS, GLOG, GEXP} from './metadata'
  * @param num 
  * @returns 转换后的像素
  */
- export const UNIT_CONVERSION = function (num: string | number): number{
+export const UNIT_CONVERSION = function (num: string | number): number{
 	return uni.upx2px(Number(num));
 }
 /**
