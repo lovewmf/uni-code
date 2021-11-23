@@ -1,5 +1,5 @@
 declare namespace StrongCode {
-    
+
     /**
      * @description 保存图片 兼容Nvue
      */

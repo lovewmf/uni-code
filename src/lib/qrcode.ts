@@ -53,8 +53,8 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
     ctx.clearRect(0, 0, SIZE, SIZE);
     ctx.setFillStyle(opt.bgColor || '#FFFFFF');//二维码背景色
     ctx.fillRect(0, 0, SIZE, SIZE);//设置画布大小
-
-    opt.src ? ctx.drawImage(opt.src,0,0,SIZE,SIZE) : false;// 设置画布背景
+    // 设置画布背景
+    opt.src ? ctx.drawImage(opt.src,0,0,SIZE,SIZE) : false;
     //绘制二维码颜色 支持渐变
     opt.color ? SetColorCode(ctx,SIZE,opt.color) : ctx.setFillStyle("#000000");
     // 绘制二维码边框 支持渐变 透明度
@@ -110,15 +110,15 @@ const SetCodeType: QRCodeType = {
     'none': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
         ctx.fillRect(x,y,w,h);
     },
-    // 星星码点
+    // 星星码点 暂未实现
     'starry': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
         ctx.drawImage('', x, y, w, h)
     },
-    // 圆点码点
+    // 圆点码点 暂未实现
     'dots': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
         ctx.drawImage('', x, y, w, h)
     },
-    // 自定义图片为码点
+    // 自定义图片为码点 暂未实现
     'custom': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number) {
         ctx.drawImage('', x, y, w, h)
     },
