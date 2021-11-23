@@ -63,7 +63,7 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
     for (let i = 0; i < width; i++) {//开始生成二维码
         for (let j = 0; j < width; j++) {
             if (frame[j * width + i]) {
-                SetCodeType[opt.type || 'none'](ctx,px * i + offset, px * j + offset , px, px)
+                SetCodeType[opt.type || 'none'] ? SetCodeType[opt.type || 'none'](ctx,px * i + offset, px * j + offset , px, px) : SetCodeType[opt.type || 'none'](ctx,px * i + offset, px * j + offset , px, px)
                 // ctx.fillRect(px * i + offset, px * j + offset , px, px);
             }
         }
