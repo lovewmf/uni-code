@@ -76,6 +76,13 @@ interface CodeTypeValue {
 }
 type BarCodeType = Record<codeGroup, CodeTypeValue>
 
+/**
+ * @method SetBarCodeType
+ * @author wmf❤洛尘
+ * @Date 2021-11-22
+ * @LastEditTime 2021-11-22
+ * @description 生成的条形码类型
+ */
 const SetBarCodeType: BarCodeType = {
     /**
      * @method CODE128

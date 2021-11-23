@@ -53,6 +53,7 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
     ctx.clearRect(0, 0, SIZE, SIZE);
     ctx.setFillStyle(opt.bgColor || '#FFFFFF');//二维码背景色
     ctx.fillRect(0, 0, SIZE, SIZE);//设置画布大小
+
     opt.src ? ctx.drawImage(opt.src,0,0,SIZE,SIZE) : false;// 设置画布背景
     //绘制二维码颜色 支持渐变
     opt.color ? SetColorCode(ctx,SIZE,opt.color) : ctx.setFillStyle("#000000");
@@ -96,15 +97,15 @@ type codeGroup = 'none' | 'starry' | 'dots'| 'custom';
 interface CodeTypeValue {
     (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number): void
 }
-type CodeType = Record<codeGroup, CodeTypeValue>
+type QRCodeType = Record<codeGroup, CodeTypeValue>
 /**
  * @method SetCodeType
  * @author wmf
  * @Date 2021-11-15
- * @LastEditTime 2021-11-15
+ * @LastEditTime 2021-11-22
  * @description 设置二维码码点
  */
-const SetCodeType: CodeType = {
+const SetCodeType: QRCodeType = {
     // 正常码点
     'none': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
         ctx.fillRect(x,y,w,h);
@@ -113,12 +114,12 @@ const SetCodeType: CodeType = {
     'starry': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
         ctx.drawImage('', x, y, w, h)
     },
-    // 自定义图片为码点
-    'custom': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number) {
-        ctx.drawImage('', x, y, w, h)
-    },
     // 圆点码点
     'dots': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
+        ctx.drawImage('', x, y, w, h)
+    },
+    // 自定义图片为码点
+    'custom': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number) {
         ctx.drawImage('', x, y, w, h)
     },
 }

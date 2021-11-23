@@ -15,4 +15,5 @@ export const BarCode = OperationCode;
 // 二维码
 export const QRCode = WidgetCode;
 
+// 获取条形码或者二维码图片
 export const GetCodeImg = SaveCodeImg;
