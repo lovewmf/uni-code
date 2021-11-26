@@ -6,6 +6,10 @@ npm run install //安装依赖
 npm run build // 打包
 
 ```
+
+# 相关问题
+
+1. 支付宝小程序画布模糊问题 https://opendocs.alipay.com/support/01rb8t
 ## 示例地址
 
 `https://ext.dcloud.net.cn/plugin?id=4662`

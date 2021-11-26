@@ -7,9 +7,6 @@ import {
     getTimeDate
 } from '../common/support'
 
-/**
-* @description 定义二维码参数
-*/
 export const WidgetCode = function(opt: StrongCode.BarCodePars,callback?: Function){
     if (!opt.code) {
         console.warn("没有找到二维码code");
@@ -20,7 +17,7 @@ export const WidgetCode = function(opt: StrongCode.BarCodePars,callback?: Functi
         return
     }
     let CTX: UniApp.CanvasContext;
-    //二维码开始绘制时间记录开始
+    //二维码绘制时间记录开始
     const timeStar: number = new Date().getTime();
     //实例化QRCodeInit
     const BARCODE: QRCodeInit = new QRCodeInit(opt.level);

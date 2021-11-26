@@ -11,6 +11,16 @@ export const UNIT_CONVERSION = function (num: string | number): number{
 }
 /**
  * @author wmf❤洛尘
+ * @method getPixelRatio
+ * @description 获取设备像素比 获取系统信息同步接口。
+ * @returns num Number
+ */
+ export const getPixelRatio = function(): number {
+    const res = uni.getSystemInfoSync();
+    return res.pixelRatio
+ }
+/**
+ * @author wmf❤洛尘
  * @method getTimeDate
  * @description 获取当前日期
  * @returns YY-MM-DD HH:hh:mm
@@ -59,15 +69,17 @@ export const UtF16TO8 = function (code: string | number): string{
 export const SaveCodeImg = function(k: StrongCode.SaveCanvasPars): object{
     const width: number = UNIT_CONVERSION(Number(k.width));
     const height: number = UNIT_CONVERSION(Number(k.height));
+    const destWidth: number = width * getPixelRatio();
+    const destHeight: number = height * getPixelRatio();
     return new Promise((resolve)=>{
         if (Object.prototype.toString.call(k.id) == '[object String]') {
             uni.canvasToTempFilePath({
                 canvasId: k.id as string,
                 width: width,
                 height: height,
-                destWidth: width,
-                destHeight: height,
-                fileType: k.type || 'png',
+                destWidth: destWidth,
+                destHeight: destHeight,
+                fileType: k.type || 'jpg',
                 quality: k.quality || 1,
                 complete: function(res) {
                     resolve(res)
@@ -340,43 +352,53 @@ export class QRCodeInit {
                             r3x = 0;
                             r3y = r3y > 0  ? 0 : 1;
                         }
-                        if (!r3y && !this.ismasked(x, y))
+                        if (!r3y && !this.ismasked(x, y)){
                             this.qrframe[x + y * this.width] ^= 1;
+                        }
                     }
                 break;
             case 5:
                 for (let r3y = 0, y = 0; y < this.width; y++, r3y++) {
-                    if (r3y == 3)
+                    if (r3y == 3){
                         r3y = 0;
+                    }
                     for (let r3x = 0, x = 0; x < this.width; x++, r3x++) {
-                        if (r3x == 3)
+                        if (r3x == 3){
                             r3x = 0;
-                        if (!((x & y & 1) + this.toNum((this.toNum(r3x) | this.toNum(r3y)))) && !this.ismasked(x, y))
+                        }
+                        if (!((x & y & 1) + this.toNum((this.toNum(r3x) | this.toNum(r3y)))) && !this.ismasked(x, y)){
                             this.qrframe[x + y * this.width] ^= 1;
+                        }
                     }
                 }
                 break;
             case 6:
                 for (let r3y = 0, y = 0; y < this.width; y++, r3y++) {
-                    if (r3y == 3)
+                    if (r3y == 3){
                         r3y = 0;
+                    }
                     for (let r3x = 0, x = 0; x < this.width; x++, r3x++) {
-                        if (r3x == 3)
+                        if (r3x == 3){
                             r3x = 0;
-                        if (!(((x & y & 1) + (r3x && (r3x == r3y ? 1 : 0))) & 1) && !this.ismasked(x, y))
+                        }
+                        if (!(((x & y & 1) + (r3x && (r3x == r3y ? 1 : 0))) & 1) && !this.ismasked(x, y)){
                             this.qrframe[x + y * this.width] ^= 1;
+                        }
                     }
                 }
                 break;
             case 7:
                 for (let r3y = 0, y = 0; y < this.width; y++, r3y++) {
-                    if (r3y == 3)
+                    if (r3y == 3) {
                         r3y = 0;
+                    }
                     for (let r3x = 0, x = 0; x < this.width; x++, r3x++) {
-                        if (r3x == 3)
+                        if (r3x == 3) {
                             r3x = 0;
-                        if (!(((r3x && (r3x == r3y ? 1 : 0)) + ((x + y) & 1)) & 1) && !this.ismasked(x, y))
+                        }
+                        if (!(((r3x && (r3x == r3y ? 1 : 0)) + ((x + y) & 1)) & 1) && !this.ismasked(x, y)) {
                             this.qrframe[x + y * this.width] ^= 1;
+                        }
                     }
                 }
                 break;
