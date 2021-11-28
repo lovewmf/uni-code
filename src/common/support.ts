@@ -15,9 +15,9 @@ export const UNIT_CONVERSION = function (num: string | number): number{
  * @description 获取设备像素比 获取系统信息同步接口。
  * @returns num Number
  */
- export const getPixelRatio = function(): number {
+ export const getPixelRatio = function(name: string): string | number {
     const res = uni.getSystemInfoSync();
-    return res.pixelRatio
+    return res[name]
  }
 /**
  * @author wmf❤洛尘
@@ -69,8 +69,9 @@ export const UtF16TO8 = function (code: string | number): string{
 export const SaveCodeImg = function(k: StrongCode.SaveCanvasPars): object{
     const width: number = UNIT_CONVERSION(Number(k.width));
     const height: number = UNIT_CONVERSION(Number(k.height));
-    const destWidth: number = width * getPixelRatio();
-    const destHeight: number = height * getPixelRatio();
+    const pixelRatio: number = getPixelRatio('pixelRatio') as  number;
+    const destWidth: number = width * pixelRatio;
+    const destHeight: number = height * pixelRatio;
     return new Promise((resolve)=>{
         if (Object.prototype.toString.call(k.id) == '[object String]') {
             uni.canvasToTempFilePath({

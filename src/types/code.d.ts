@@ -62,11 +62,13 @@ declare namespace StrongCode {
      * @param color Array 二维码绘制的颜色  数组 可以传入多个颜色渐变 默认最多10种颜色渐变 不传默认#000000 非比传
      * @param img String 二维码中间log图片配置 不传则没有边框 非必传
      * @param border Object 二维码边框配置 不传则没有边框 非必传
+     * @param source String 来源 非必传
      * @param ctx Object  自定义组件时需要 传this 必传√
      */
     interface BarCodePars {
         id: string | UniApp.CanvasContext,
         type?: string,
+        source?: string,
         size: string | number,
         code: string,
         src?: string,
@@ -106,12 +108,14 @@ declare namespace StrongCode {
      * @param bgColor String 生成条形码的背景色 默认 #FFFFFF 非必传
      * @param color Array 条形码的颜色 默认黑色不见变 传入多个颜色渐变 最多10种颜色 如果颜色一样则不会渐变
      * @param ctx Object 自定义组建需要的上下文 必传√
+     * @param source 来源渠道 非必传
      */
     interface OperationCodePars {
         id: string | UniApp.CanvasContext,
         width: number,
         height: number,
         type?: string,
+        source?: string,
         code: string,
         bgColor?: string,
         color?: string[],
