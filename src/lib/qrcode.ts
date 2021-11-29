@@ -1,4 +1,3 @@
-import { getPixelRatio } from './../common/support';
 import {
     QRCodeInit,
     UNIT_CONVERSION,
@@ -6,7 +5,8 @@ import {
     SaveCodeImg,
     SetGradient,
     getTimeDate,
-    GETSIZE
+    GETSIZE,
+    getPixelRatio
 } from '../common/support'
 
 export const WidgetCode = function(opt: StrongCode.BarCodePars,callback?: Function){
