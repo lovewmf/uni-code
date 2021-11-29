@@ -5,7 +5,8 @@ import {
     UtF16TO8,
     SaveCodeImg,
     SetGradient,
-    getTimeDate
+    getTimeDate,
+    GETSIZE
 } from '../common/support'
 
 export const WidgetCode = function(opt: StrongCode.BarCodePars,callback?: Function){
@@ -43,7 +44,7 @@ export const WidgetCode = function(opt: StrongCode.BarCodePars,callback?: Functi
 
 }
 const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: UniApp.CanvasContext, frame: number[], width: number, callback?: Function) {
-    const SIZE: number = UNIT_CONVERSION(opt.size); //画布大小
+    const SIZE: number = GETSIZE[opt.source || 'none'] ? GETSIZE[opt.source || 'none'](opt.size) : UNIT_CONVERSION(opt.size); //画布大小
     const padding: number = ( UNIT_CONVERSION(opt.padding || 0) || 0) + (opt.border ? opt.border.lineWidth || 5 : 0);// 画布内边距 默认 0 单位rpx
     const px: number = Number((SIZE / (width + padding)).toFixed(2));
     const offset: number = Math.floor((SIZE -  px * width) / 2);
@@ -68,7 +69,7 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
   
     }
     // 图片放在下面 防止图片在二维码下面
-    opt.img ? SetImageType[opt.img?.type || 'none'] ?  SetImageType[opt.img?.type || 'none'](ctx,SIZE,opt.img) : SetImageType['none'](ctx,SIZE,opt.img) : false;
+    opt.img ? SetImageType[opt.img?.type || 'none'] ?  SetImageType[opt.img?.type || 'none'](ctx,SIZE,opt.img,opt.source || 'none') : SetImageType['none'](ctx,SIZE,opt.img,opt.source || 'none') : false;
     //绘制二维码文字
     opt.text ? SetTextCode(ctx,SIZE,opt.text) : false;
     
@@ -93,7 +94,6 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
     });
 
 }
-
 type codeGroup = 'none' | 'starry' | 'dots'| 'custom';
 interface CodeTypeValue {
     (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number): void
@@ -140,7 +140,7 @@ const SetColorCode = function (ctx: UniApp.CanvasContext,size: number,colors: st
 
 type imgGroup = 'none' | 'circle' | 'round';
 interface ImageTypeValue {
-    (ctx:UniApp.CanvasContext,size: number, img: StrongCode.CodeImg): void
+    (ctx:UniApp.CanvasContext,size: number, img: StrongCode.CodeImg,source: string): void
 }
 type ImageType = Record<imgGroup, ImageTypeValue>
 /**
@@ -149,8 +149,8 @@ type ImageType = Record<imgGroup, ImageTypeValue>
  * @description 二维码中间log绘制
  */
 const SetImageType: ImageType = {//none circle round
-    'none': function SetImageCode(ctx: UniApp.CanvasContext,size: number, img: StrongCode.CodeImg){
-        const iconSize = img?.size || 30
+    'none': function SetImageCode(ctx: UniApp.CanvasContext,size: number, img: StrongCode.CodeImg,source: string){
+        const iconSize = GETSIZE[source] ? GETSIZE[source](img.size) : img.size || 30
         const width =  Number(((size - iconSize) / 2).toFixed(2));
         ctx.save();
         ctx.drawImage(img.src, width, width, iconSize, iconSize)
@@ -161,8 +161,8 @@ const SetImageType: ImageType = {//none circle round
      * @todo 二维码中间log 圆形
      * @description 设置二维码log为圆形
      */
-    'circle': function SetCircleImg(ctx: UniApp.CanvasContext,size: number, img: StrongCode.CodeImg){
-        const r: number = (img.size || 30);
+    'circle': function SetCircleImg(ctx: UniApp.CanvasContext,size: number, img: StrongCode.CodeImg,source: string){
+        const r: number = (GETSIZE[source] ? GETSIZE[source](img.size) : img.size || 30);
         const w: number = r * 2;
         const x: number = size/2 - r;
         const y: number = size/2 - r;
@@ -172,7 +172,7 @@ const SetImageType: ImageType = {//none circle round
         ctx.beginPath();
 		ctx.arc(cx, cy, r, 0, 2 * Math.PI);
         ctx.closePath();
-		ctx.setLineWidth(img.width || 5)
+		ctx.setLineWidth(GETSIZE[source] ? GETSIZE[source](img.width) : img.width || 5)
 		ctx.setStrokeStyle(img.color || "#FFFFFF"); // 设置绘制圆形边框的颜色
 		ctx.stroke(); 
 		ctx.clip();
@@ -184,9 +184,9 @@ const SetImageType: ImageType = {//none circle round
      * @todo 二维码中间log 圆角
      * @description 设置二维码log为圆角
      */
-    'round': function SetRoundImg(ctx: UniApp.CanvasContext,size: number, img: StrongCode.CodeImg) {
+    'round': function SetRoundImg(ctx: UniApp.CanvasContext,size: number, img: StrongCode.CodeImg,source: string) {
         let r: number = img.degree || 5;
-        const iconSize = img.size || 30;
+        const iconSize =  GETSIZE[source] ? GETSIZE[source](img.size) : img.size || 30;
         const w: number = iconSize;
         const h: number = iconSize;
         const x: number = size/2 - iconSize/2;
@@ -201,7 +201,7 @@ const SetImageType: ImageType = {//none circle round
 		ctx.arcTo(x, y + h, x, y, r);
 		ctx.arcTo(x, y, x + w, y, r);
 		ctx.closePath();
-        ctx.setLineWidth(img.width || 5)
+        ctx.setLineWidth(GETSIZE[source] ? GETSIZE[source](img.width) : img.width || 5)
 		ctx.setStrokeStyle(img.color || "#FFFFFF"); // 设置绘制圆形边框的颜色
 		ctx.stroke();
 		ctx.clip();

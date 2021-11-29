@@ -13,11 +13,11 @@ export const UNIT_CONVERSION = function (num: string | number): number{
  * @author wmf❤洛尘
  * @method getPixelRatio
  * @description 获取设备像素比 获取系统信息同步接口。
- * @returns num Number
+ * @returns num Number/String
  */
- export const getPixelRatio = function(name: string): string | number {
+ export const getPixelRatio = function(name?: string): string | number {
     const res = uni.getSystemInfoSync();
-    return res[name]
+    return res[name || 'pixelRatio']
  }
 /**
  * @author wmf❤洛尘
@@ -31,7 +31,19 @@ export const getTimeDate = function(): string {
    const hour: string = date.toTimeString().slice(0,8);
    return `${year} ${hour}`
 }
-  
+type sizeGroup = 'none' | 'MP-ALIPAY';
+interface SizeTypeValue {
+    (size: string | number): number
+}
+type SizeType = Record<sizeGroup, SizeTypeValue>
+export const GETSIZE: SizeType = {
+    'MP-ALIPAY': function (size: string | number): number {
+        return UNIT_CONVERSION(size) * (getPixelRatio() as number)
+    },
+    'none': function (size: string | number): number {
+        return UNIT_CONVERSION(size)  as number
+    }
+}
 /**
  * @author wmf❤洛尘
  * @method UtF16TO8
