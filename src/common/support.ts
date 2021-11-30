@@ -202,7 +202,7 @@ export class QRCodeInit {
     private rlens: number[] = [];
     private genpoly: number[] = []
 
-    private ecclevel:number = 4;
+    private ecclevel:number = 2;
     private N1:number = 3;
     private N2:number = 3;
     private N3:number = 40;
@@ -213,7 +213,7 @@ export class QRCodeInit {
     private neccblk1: number = 0;
     private datablkw: number = 0;
     private eccblkwid: number = 0;
-    constructor(level: number = 4){
+    constructor(level: number = 2){
         this.ecclevel = level
     }
     private setmask (x: number,y: number) {
