@@ -62,7 +62,7 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
     for (let i = 0; i < width; i++) {//开始生成二维码
         for (let j = 0; j < width; j++) {
             if (frame[j * width + i]) {
-                SetCodeType[opt.type || 'none'] ? SetCodeType[opt.type || 'none'](ctx,px * i + offset, px * j + offset , px, px) : SetCodeType[opt.type || 'none'](ctx,px * i + offset, px * j + offset , px, px)
+                SetCodeType[opt.type || 'none'] ? SetCodeType[opt.type || 'none'](opt.bgColor,ctx,px * i + offset, px * j + offset , px, px) : SetCodeType[opt.type || 'none'](opt.bgColor,ctx,px * i + offset, px * j + offset , px, px)
                 // ctx.fillRect(px * i + offset, px * j + offset , px, px);
             }
         }
@@ -94,9 +94,9 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
     });
 
 }
-type codeGroup = 'none' | 'starry' | 'dots'| 'custom';
+type codeGroup = 'none' | 'starry'| 'square' | 'dots'| 'custom';
 interface CodeTypeValue {
-    (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number): void
+    (bg: string,ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number): void
 }
 type QRCodeType = Record<codeGroup, CodeTypeValue>
 /**
@@ -108,19 +108,45 @@ type QRCodeType = Record<codeGroup, CodeTypeValue>
  */
 const SetCodeType: QRCodeType = {
     // 正常码点
-    'none': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
+    'none': function (bg: string = "#ffffff",ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
         ctx.fillRect(x,y,w,h);
     },
     // 星星码点 暂未实现
-    'starry': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
+    'starry': function (bg: string = "#ffffff",ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
         ctx.drawImage('', x, y, w, h)
     },
-    // 圆点码点 暂未实现
-    'dots': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
-        ctx.drawImage('', x, y, w, h)
+    // 圆点码点
+    'dots': function (bg: string = "#ffffff",ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x, y, w/2, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.fill();
+        ctx.setLineWidth(1);
+        ctx.setStrokeStyle(bg);
+        ctx.stroke();
+        ctx.clip();
+        ctx.restore();
+    },
+    //正方形码点
+    'square': function (bg: string = "#ffffff", ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number) {
+		ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.arcTo(x + w, y, x + w, y + h, 0);
+        ctx.arcTo(x + w, y + h, x, y + h, 0);
+        ctx.arcTo(x, y + h, x, y, 0);
+        ctx.arcTo(x, y, x + w, y, 0);
+		ctx.fill();
+        ctx.closePath();
+        ctx.setLineWidth(1);
+		ctx.setStrokeStyle(bg);
+        ctx.stroke();
+        ctx.clip();
+		ctx.restore()
     },
     // 自定义图片为码点 暂未实现
-    'custom': function (ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number) {
+    'custom': function (bg: string = "#ffffff", ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number) {
         ctx.drawImage('', x, y, w, h)
     },
 }
