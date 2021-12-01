@@ -7,7 +7,7 @@ import {
     GETSIZE
 } from '../common/support'
 
-import { BarCode128 } from '../codeType'
+import { BarCode128} from '../codeType'
 
 import {PATTERNS} from '../common/metadata'
 
@@ -125,24 +125,10 @@ const SetBarCodeType: BarCodeType = {
      * @description 条形码类型 CODE39
      */
     "CODE39": function CODE39 (code: string, gc: GraphicContentInit, height: number): void {
-        const CodeNum: number[] = BarCode128(code);
-        let barWeight = gc.area.width / ((CodeNum.length - 3) * 11 + 35);
-        let x: number = gc.area.left;
-        const y = gc.area.top;
-        // const barH = height - y - this.border
-        const barH = height - gc.area.top;
-        for (let i = 0; i < CodeNum.length; i++) {
-            const c = CodeNum[i];
-            for (let bar = 0; bar < 8; bar += 2) {
-                const barW = PATTERNS[c][bar] * barWeight;
-                const spcW = PATTERNS[c][bar + 1] * barWeight;
-                if (barW > 0) {
-                    gc.fillFgRect(x, y, barW, barH);
-                }
-
-                x += barW + spcW;
-            }
-        }
+        // const CodeNum: string = BarCode39(code);
+        // console.log(CodeNum)
+        console.error("条形码编码类型：CODE39暂未实现");
+       
     },
     /**
      * @method EAN13

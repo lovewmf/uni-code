@@ -35,7 +35,7 @@ qrc: {// 二维码
 	code: 'https://qm.qq.com/cgi-bin/qm/qr?k=LKqML292dD2WvwQfAJXBUmvgbiB_TZWF&noverify=0',
 	size: 460, // 二维码大小
 	level: 4, //纠错等级 0～4
-	type: 'none',
+	type: 'none', // 二维码 码点 默认none 可选值 dots square starry custom
 	src: '/static/35.png',//画布背景
 	bgColor: '#FFFFFF', //二维码背景色 默认白色 transparent 透明
 	padding: 0,//二维码margin 默认0 非必传
