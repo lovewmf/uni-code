@@ -46,7 +46,7 @@ export const WidgetCode = function(opt: StrongCode.BarCodePars,callback?: Functi
 const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: UniApp.CanvasContext, frame: number[], width: number, callback?: Function) {
     const SIZE: number = GETSIZE[opt.source || 'none'] ? GETSIZE[opt.source || 'none'](opt.size) : UNIT_CONVERSION(opt.size); //画布大小
     const padding: number = ( UNIT_CONVERSION(opt.padding || 0) || 0) + (opt.border ? opt.border.lineWidth || 5 : 0);// 画布内边距 默认 0 单位rpx
-    const px: number = Number((SIZE / (width + padding)).toFixed(2));
+    const px: number = Math.round((SIZE / (width + padding)));
     const offset: number = Math.floor((SIZE -  px * width) / 2);
 
     ctx.clearRect(0, 0, SIZE, SIZE);
