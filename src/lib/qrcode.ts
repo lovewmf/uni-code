@@ -63,7 +63,6 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
         for (let j = 0; j < width; j++) {
             if (frame[j * width + i]) {
                 SetCodeType[opt.type || 'none'] ? SetCodeType[opt.type || 'none'](opt.bgColor,ctx,px * i + offset, px * j + offset , px, px) : SetCodeType[opt.type || 'none'](opt.bgColor,ctx,px * i + offset, px * j + offset , px, px)
-                // ctx.fillRect(px * i + offset, px * j + offset , px, px);
             }
         }
   
