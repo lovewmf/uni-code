@@ -6,6 +6,11 @@ npm run install //安装依赖
 npm run build // 打包
 
 ```
+* canvas 2d 没有draw() 方法
+* 清空笔记可以使用clearRect()方法
+* 没有setFillStyle方法,只有fillStyle属性
+* 没有setStrokeStyle方法,只有strokeStyle属性
+* 没有setGlobalAlpha方法,只要有globalAlpha属性
 
 # 相关问题
 

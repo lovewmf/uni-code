@@ -100,7 +100,7 @@ export const SaveCodeImg = function(k: StrongCode.SaveCanvasPars): object{
             }, k.ctx)
         } else if (Object.prototype.toString.call(k.id) == '[object Object]') {//兼容nvue
             const ctx = k.id as StrongCode.NvueCanvasConText;
-            ctx.toTempFilePath(0, 0, width, height, width, height, k.type || 'png', 1,(res)=> {
+            ctx.toTempFilePath(0, 0, width, height, destWidth, destHeight, k.type || 'png', 1,(res)=> {
                 resolve(res)
             })
         }
