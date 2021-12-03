@@ -31,14 +31,71 @@ export const getTimeDate = function(): string {
    const hour: string = date.toTimeString().slice(0,8);
    return `${year} ${hour}`
 }
-type sizeGroup = 'none' | 'MP-ALIPAY';
+type sizeGroup = 'none' | 'NVUE' | 'APP-PLUS' |'H5'| 'MP' | 'MP-ALIPAY' | 'MP-WEIXIN' | 'MP-BAIDU' | 'MP-TOUTIAO' | 'MP-LARK' | 'MP-QQ' | 'MP-KUAISHOU' | 'MP-360' | 'QUICKAPP-WEBVIEW' | 'QUICKAPP-WEBVIEW-UNION' | 'QUICKAPP-WEBVIEW-HUAWEI';
 interface SizeTypeValue {
     (size: string | number): number
 }
 type SizeType = Record<sizeGroup, SizeTypeValue>
 export const GETSIZE: SizeType = {
+    // 支付宝小程序
     'MP-ALIPAY': function (size: string | number): number {
         return UNIT_CONVERSION(size) * (getPixelRatio() as number)
+    },
+    // 微信小程序
+    'MP-WEIXIN': function (size: string | number): number {
+        return UNIT_CONVERSION(size)  as number
+    },
+    // 百度小程序
+    'MP-BAIDU': function (size: string | number): number {
+        return UNIT_CONVERSION(size)  as number
+    },
+    // 字节小程序
+    'MP-TOUTIAO': function (size: string | number): number {
+        return UNIT_CONVERSION(size)  as number
+    },
+    // QQ小程序
+    'MP-QQ': function (size: string | number): number {
+        return UNIT_CONVERSION(size)  as number
+    },
+    // 飞书小程序
+    'MP-LARK': function (size: string | number): number {
+        return UNIT_CONVERSION(size)  as number
+    },
+    // 快手小程序
+    'MP-KUAISHOU': function (size: string | number): number {
+        return UNIT_CONVERSION(size)  as number
+    },
+    // 360小程序
+    'MP-360': function (size: string | number): number {
+        return UNIT_CONVERSION(size)  as number
+    },
+    // 快应用通用(包含联盟、华为)
+    'QUICKAPP-WEBVIEW': function (size: string | number): number {
+        return UNIT_CONVERSION(size)  as number
+    },
+    // 快应用联盟
+    'QUICKAPP-WEBVIEW-UNION': function (size: string | number): number {
+        return UNIT_CONVERSION(size)  as number
+    },
+    // 快应用华为
+    'QUICKAPP-WEBVIEW-HUAWEI': function (size: string | number): number {
+        return UNIT_CONVERSION(size)  as number
+    },
+     // 微信小程序/支付宝小程序/百度小程序/字节跳动小程序/飞书小程序/QQ小程序/360小程序
+    'MP': function (size: string | number): number {
+        return UNIT_CONVERSION(size)  as number
+    },
+    // App
+    'APP-PLUS': function (size: string | number): number {
+        return UNIT_CONVERSION(size)  as number
+    },
+    // App nvue
+    'NVUE': function (size: string | number): number {
+        return UNIT_CONVERSION(size)  as number
+    },
+    // H5
+    'H5': function (size: string | number): number {
+        return UNIT_CONVERSION(size)  as number
     },
     'none': function (size: string | number): number {
         return UNIT_CONVERSION(size)  as number
