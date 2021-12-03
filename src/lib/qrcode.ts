@@ -78,12 +78,12 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
             ...res,
             createTime: getTimeDate(),
             takeUpTime: ((new Date()).getTime()) - time, 
-            img: res.errMsg == "drawCanvas:ok" ? await SaveCodeImg({
+            img: await SaveCodeImg({
                 width: opt.size,
                 height: opt.size,
                 id: opt.id,
                 ctx: opt.ctx || null
-            }) : null,
+            }),
             model: getPixelRatio('model') as string,// 设备型号
             system: getPixelRatio('system') as string,// 操作系统名称及版本，如Android 10
             platform: getPixelRatio('platform') as string, //客户端平台，值域为：ios、android、mac（3.1.10+）、windows（3.1.10+）、linux（3.1.10+）
