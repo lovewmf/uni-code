@@ -36,8 +36,8 @@ export const OperationCode = function (opt: StrongCode.OperationCodePars, callba
     }
 }
 export const BarCodeCanvas = function (time: number,opt: StrongCode.OperationCodePars, ctx: UniApp.CanvasContext, callback?: Function) {
-    const width: number = GETSIZE[opt.source || 'none'] ? GETSIZE[opt.source || 'none'](opt.width) : UNIT_CONVERSION(opt.width);
-    const height: number = GETSIZE[opt.source || 'none'] ? GETSIZE[opt.source || 'none'](opt.height) : UNIT_CONVERSION(opt.height);
+    const width: number = GETSIZE[opt.source || 'none'](opt.width);
+    const height: number = GETSIZE[opt.source || 'none'](opt.height);
     //设置背景色
     ctx.setFillStyle(opt.bgColor || '#FFFFFF');
 
