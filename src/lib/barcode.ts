@@ -36,8 +36,8 @@ export const OperationCode = function (opt: StrongCode.OperationCodePars, callba
     }
 }
 export const BarCodeCanvas = function (time: number,opt: StrongCode.OperationCodePars, ctx: UniApp.CanvasContext, callback?: Function) {
-    const width: number = GETSIZE[opt.source || 'none'] ? GETSIZE[opt.source || 'none'](opt.width) : UNIT_CONVERSION(opt.width);
-    const height: number = GETSIZE[opt.source || 'none'] ? GETSIZE[opt.source || 'none'](opt.height) : UNIT_CONVERSION(opt.height);
+    const width: number = GETSIZE[opt.source || 'none'](opt.width);
+    const height: number = GETSIZE[opt.source || 'none'](opt.height);
     //设置背景色
     ctx.setFillStyle(opt.bgColor || '#FFFFFF');
 
@@ -53,12 +53,12 @@ export const BarCodeCanvas = function (time: number,opt: StrongCode.OperationCod
             ...res,
             createTime: getTimeDate(),
             takeUpTime: ((new Date()).getTime()) - time, 
-            img: res.errMsg == "drawCanvas:ok" ? await SaveCodeImg({
+            img: await SaveCodeImg({
                 width: opt.width,
                 height: opt.height,
                 id: opt.id,
                 ctx: opt.ctx || null
-            }) : null,
+            }),
             model: getPixelRatio('model') as string,// 设备型号
             system: getPixelRatio('system') as string,// 操作系统名称及版本，如Android 10
             platform: getPixelRatio('platform') as string, //客户端平台，值域为：ios、android、mac（3.1.10+）、windows（3.1.10+）、linux（3.1.10+）
