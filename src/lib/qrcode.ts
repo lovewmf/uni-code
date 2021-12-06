@@ -45,19 +45,21 @@ export const WidgetCode = function(opt: StrongCode.BarCodePars,callback?: Functi
 }
 const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: UniApp.CanvasContext, frame: number[], width: number, callback?: Function) {
     const SIZE: number = GETSIZE[opt.source || 'none'] ? GETSIZE[opt.source || 'none'](opt.size) : UNIT_CONVERSION(opt.size); //画布大小
+    const W: number = GETSIZE[opt.source || 'none'] ? GETSIZE[opt.source || 'none'](opt.size) : UNIT_CONVERSION(opt.size);
+    const H: number = GETSIZE[opt.source || 'none'] ? GETSIZE[opt.source || 'none'](opt.size) : UNIT_CONVERSION(opt.size);
     const padding: number = ( UNIT_CONVERSION(opt.padding || 0) || 0) + (opt.border ? opt.border.lineWidth || 5 : 0);// 画布内边距 默认 0 单位rpx
     const px: number = Math.round((SIZE / (width + padding)));
     const offset: number = Math.floor((SIZE -  px * width) / 2);
 
-    ctx.clearRect(0, 0, SIZE, SIZE);
+    ctx.clearRect(0, 0, W, H);
     ctx.setFillStyle(opt.bgColor || '#FFFFFF');//二维码背景色
-    ctx.fillRect(0, 0, SIZE, SIZE);//设置画布大小
+    ctx.fillRect(0, 0,  W, H);//设置画布大小
     // 设置画布背景
-    opt.src ? ctx.drawImage(opt.src,0,0,SIZE,SIZE) : false;
+    opt.src ? ctx.drawImage(opt.src,0,0, SIZE, SIZE) : false;
     //绘制二维码颜色 支持渐变
-    opt.color ? SetColorCode(ctx,SIZE,opt.color) : ctx.setFillStyle("#000000");
+    opt.color ? SetColorCode(ctx, W, H, opt.color) : ctx.setFillStyle("#000000");
     // 绘制二维码边框 支持渐变 透明度
-    opt.border ? SetBorderCode(ctx,SIZE,opt.border) : false;
+    opt.border ? SetBorderCode(ctx, W, H ,opt.border) : false;
 
     for (let i = 0; i < width; i++) {//开始生成二维码
         for (let j = 0; j < width; j++) {
@@ -65,12 +67,11 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
                 SetCodeType[opt.type || 'none'] ? SetCodeType[opt.type || 'none'](opt.bgColor,ctx,px * i + offset, px * j + offset , px, px) : SetCodeType[opt.type || 'none'](opt.bgColor,ctx,px * i + offset, px * j + offset , px, px)
             }
         }
-  
     }
     // 图片放在下面 防止图片在二维码下面
     opt.img ? SetImageType[opt.img?.type || 'none'] ?  SetImageType[opt.img?.type || 'none'](ctx,SIZE,opt.img,opt.source || 'none') : SetImageType['none'](ctx,SIZE,opt.img,opt.source || 'none') : false;
     //绘制二维码文字
-    opt.text ? SetTextCode(ctx,SIZE,opt.text) : false;
+    opt.text ? SetTextCode(ctx, W, H, opt.text) : false;
     
     ctx.draw(false, async (res) => {
         callback ? callback({
@@ -157,8 +158,8 @@ const SetCodeType: QRCodeType = {
  * @todo 颜色支持多种渐变
  * @description 设置二维码颜色 支持渐变色
  */
-const SetColorCode = function (ctx: UniApp.CanvasContext,size: number,colors: string[]): void {
-    const GRD = SetGradient(ctx,size,size,colors)
+const SetColorCode = function (ctx: UniApp.CanvasContext,w: number,h: number,colors: string[]): void {
+    const GRD = SetGradient(ctx,w,h,colors)
     ctx.setFillStyle(GRD)
 }
 
@@ -241,14 +242,12 @@ const SetImageType: ImageType = {//none circle round
  * @description 设置二维码边框
  */
 
- const SetBorderCode = function(ctx: UniApp.CanvasContext,size: number,border?: StrongCode.BorderCode): void {
+ const SetBorderCode = function(ctx: UniApp.CanvasContext,w: number, h: number, border?: StrongCode.BorderCode): void {
     const colors: string[] = border?.color || ['#000000'];
     const r: number = border?.degree || 5;
     const x: number = 0;
     const y: number = 0;
-    const w: number = size;
-    const h: number = size;
-    const GRD = SetGradient(ctx,size,size,colors)
+    const GRD = SetGradient(ctx,w,h,colors)
     ctx.save();
     ctx.setGlobalAlpha(border?.opacity || 1)
 	ctx.beginPath();
@@ -273,9 +272,9 @@ const SetImageType: ImageType = {//none circle round
  * @todo 颜色支持多种渐变
  * @description 在二维码上设置文本
  */
- const SetTextCode = function (ctx: UniApp.CanvasContext,size: number,text: StrongCode.CodeText): void {
+ const SetTextCode = function (ctx: UniApp.CanvasContext, w: number, h: number, text: StrongCode.CodeText): void {
     let colors = text.color || ["#FFFFFF"];
-    const GRD = SetGradient(ctx,size,size,colors)
+    const GRD = SetGradient(ctx, w, h, colors)
     ctx.restore();
     ctx.setGlobalAlpha(text?.opacity || 1)
     ctx.setTextAlign('center');//'left'、'center'、'right'
@@ -283,6 +282,6 @@ const SetImageType: ImageType = {//none circle round
     ctx.font = text?.font || "normal 20px system-ui",
     ctx.setFillStyle(GRD)
 
-	ctx.fillText(text.content, size/2, size/2);
+	ctx.fillText(text.content, w/2, w/2);
     ctx.setGlobalAlpha(1)
 }

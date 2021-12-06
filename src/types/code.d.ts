@@ -44,6 +44,9 @@ declare namespace StrongCode {
     interface CodeText {
         opacity?: number,
         font?: string,
+        position?: string,
+        weight?: string,
+        size?: number,
         color?: string[],
         content: string
     }

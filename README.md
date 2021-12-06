@@ -6,6 +6,11 @@ npm run install //安装依赖
 npm run build // 打包
 
 ```
+
+|8月份|9月份|10月份|11月份|
+|:----:|:----:|:----:|:----:|
+| 183|221|351|736|
+
 * canvas 2d 没有draw() 方法
 * 清空笔记可以使用clearRect()方法
 * 没有setFillStyle方法,只有fillStyle属性
@@ -52,6 +57,7 @@ qrc: {// 二维码
 	},
 	text:{
 		// opacity: 1, //文字透明度 默认不透明
+		position: 'center', //中间 top bottom
 		size: 20,
 		font: 'bold 20px system-ui',//文字是否加粗 默认normal 20px system-ui
 		color: ["#000000"], // 文字颜色支持渐变色
@@ -68,4 +74,38 @@ qrc: {// 二维码
 	color: ['#8A2387', '#F27121'] //边框颜色支持渐变色 最多10中颜色
 }
 
+```
+
+```Swift
+/*
+ *  遍历相簿中的全部图片
+ *  @param assetCollection 相簿
+ *  @param original        是否要原图
+ */
+- (void)enumerateAssetsInAssetCollection:(PHAssetCollection *)assetCollection original:(BOOL)original
+{
+    NSLog(@"相簿名:%@", assetCollection.localizedTitle);
+    
+    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+    options.resizeMode = PHImageRequestOptionsResizeModeFast;
+    // 同步获得图片, 只会返回1张图片
+    options.synchronous = YES;
+    
+    // 获得某个相簿中的所有PHAsset对象
+    PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
+    for (PHAsset *asset in assets) {
+        // 是否要原图
+        CGSize size = original ? CGSizeMake(asset.pixelWidth, asset.pixelHeight) : CGSizeZero;
+        
+        // 从asset中获得图片
+        __weak typeof(self) weakSelf = self;
+        [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:size contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+            NSLog(@"%@", result);
+            original ? [weakSelf.photoArray addObject:result] : [weakSelf.photoArray addObject:result];
+        }];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [weakSelf.showPhotoCollectionView reloadData];
+        });
+    }
+}
 ```
