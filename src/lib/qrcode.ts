@@ -58,21 +58,20 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
     opt.src ? ctx.drawImage(opt.src,0,0, SIZE, SIZE) : false;
     //绘制二维码颜色 支持渐变
     opt.color ? SetColorCode(ctx, W, H, opt.color) : ctx.setFillStyle("#000000");
-    // 绘制二维码边框 支持渐变 透明度
-    opt.border ? SetBorderCode(ctx, W, H ,opt.border) : false;
 
     for (let i = 0; i < width; i++) {//开始生成二维码
         for (let j = 0; j < width; j++) {
             if (frame[j * width + i]) {
-                SetCodeType[opt.type || 'none'] ? SetCodeType[opt.type || 'none'](opt.bgColor,ctx,px * i + offset, px * j + offset , px, px) : SetCodeType[opt.type || 'none'](opt.bgColor,ctx,px * i + offset, px * j + offset , px, px)
+                SetCodeType[opt.type || 'none'] ? SetCodeType[opt.type || 'none'](opt.bgColor,ctx,px * i + offset, px * j + offset , px, px,opt.source) : SetCodeType[opt.type || 'none'](opt.bgColor,ctx,px * i + offset, px * j + offset , px, px,opt.source)
             }
         }
     }
     // 图片放在下面 防止图片在二维码下面
     opt.img ? SetImageType[opt.img?.type || 'none'] ?  SetImageType[opt.img?.type || 'none'](ctx,SIZE,opt.img,opt.source || 'none') : SetImageType['none'](ctx,SIZE,opt.img,opt.source || 'none') : false;
     //绘制二维码文字
-    opt.text ? SetTextCode(ctx, W, H, opt.text) : false;
-    
+    opt.text ? SetTextCode(ctx, W, H, opt.text,opt.source || "none") : false;
+    // 绘制二维码边框 支持渐变 透明度
+    opt.border ? SetBorderCode(ctx, W, H , opt.border, opt.source || "none") : false;
     ctx.draw(false, async (res) => {
         callback ? callback({
             ...res,
@@ -96,7 +95,7 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
 }
 type codeGroup = 'none' | 'starry'| 'square' | 'dots'| 'custom';
 interface CodeTypeValue {
-    (bg: string,ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number): void
+    (bg: string,ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number,source: string): void
 }
 type QRCodeType = Record<codeGroup, CodeTypeValue>
 /**
@@ -108,15 +107,15 @@ type QRCodeType = Record<codeGroup, CodeTypeValue>
  */
 const SetCodeType: QRCodeType = {
     // 正常码点
-    'none': function (bg: string = "#ffffff",ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
+    'none': function (bg: string = "#ffffff",ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number,source: string){
         ctx.fillRect(x,y,w,h);
     },
     // 星星码点 暂未实现
-    'starry': function (bg: string = "#ffffff",ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
+    'starry': function (bg: string = "#ffffff",ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number,source: string){
         ctx.drawImage('', x, y, w, h)
     },
     // 圆点码点
-    'dots': function (bg: string = "#ffffff",ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number){
+    'dots': function (bg: string = "#ffffff",ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number,source: string){
         ctx.save();
         ctx.beginPath();
         ctx.arc(x, y, w/2, 0, 2 * Math.PI);
@@ -129,7 +128,11 @@ const SetCodeType: QRCodeType = {
         ctx.restore();
     },
     //正方形码点
-    'square': function (bg: string = "#ffffff", ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number) {
+    'square': function (bg: string = "#ffffff", ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number,source: string) {
+        if(source == 'MP-BAIDU'){//百度小程序不支持arcTo方法
+            ctx.fillRect(x,y,w,h);
+            return
+        }
 		ctx.save();
         ctx.beginPath();
         ctx.moveTo(x, y);
@@ -146,7 +149,7 @@ const SetCodeType: QRCodeType = {
 		ctx.restore()
     },
     // 自定义图片为码点 暂未实现
-    'custom': function (bg: string = "#ffffff", ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number) {
+    'custom': function (bg: string = "#ffffff", ctx: UniApp.CanvasContext,x: number, y: number, w: number, h: number,source: string) {
         ctx.drawImage('', x, y, w, h)
     },
 }
@@ -211,6 +214,25 @@ const SetImageType: ImageType = {//none circle round
      * @description 设置二维码log为圆角
      */
     'round': function SetRoundImg(ctx: UniApp.CanvasContext,size: number, img: StrongCode.CodeImg,source: string) {
+        if(source == 'MP-BAIDU'){//百度小程序不支持arcTo方法
+            const r: number = GETSIZE[source](img.size || 30);
+            const w: number = r * 2;
+            const x: number = size/2 - r;
+            const y: number = size/2 - r;
+            const cx: number = x + r;
+            const cy: number = y + r;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+            ctx.closePath();
+            ctx.setLineWidth(GETSIZE[source](img.width || 5))
+            ctx.setStrokeStyle(img.color || "#FFFFFF"); // 设置绘制圆形边框的颜色
+            ctx.stroke(); 
+            ctx.clip();
+            ctx.drawImage(img.src, x, y, w, w);
+            return
+            
+        }
         let r: number = img.degree || 5;
         const iconSize =  GETSIZE[source](img.size || 30);
         const w: number = iconSize;
@@ -242,25 +264,31 @@ const SetImageType: ImageType = {//none circle round
  * @description 设置二维码边框
  */
 
- const SetBorderCode = function(ctx: UniApp.CanvasContext,w: number, h: number, border?: StrongCode.BorderCode): void {
+ const SetBorderCode = function(ctx: UniApp.CanvasContext,w: number, h: number, border: StrongCode.BorderCode, source: string): void {
     const colors: string[] = border?.color || ['#000000'];
     const r: number = border?.degree || 5;
     const x: number = 0;
     const y: number = 0;
     const GRD = SetGradient(ctx,w,h,colors)
-    ctx.save();
-    ctx.setGlobalAlpha(border?.opacity || 1)
-	ctx.beginPath();
-	ctx.moveTo(x + r, y);
-	ctx.arcTo(x + w, y, x + w, y + h, r);
-	ctx.arcTo(x + w, y + h, x, y + h, r);
-	ctx.arcTo(x, y + h, x, y, r);
-	ctx.arcTo(x, y, x + w, y, r);
-    ctx.closePath();
-	ctx.setLineWidth(border?.lineWidth || 5)
-	ctx.setStrokeStyle(GRD); // 设置绘制圆形边框的颜色
-	ctx.stroke();
-	ctx.clip();
+    ctx.restore();
+    ctx.setGlobalAlpha(border?.opacity || 1);
+    if(source == 'MP-BAIDU'){//百度小程序不支持arcTo方法
+        ctx.setLineWidth(border?.lineWidth || 5)
+        ctx.setStrokeStyle(GRD); // 设置绘制边框的颜色
+        ctx.strokeRect(0,0,w,h);
+    }else{
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+        ctx.setLineWidth(border?.lineWidth || 5)
+        ctx.setStrokeStyle(GRD); // 设置绘制圆形边框的颜色
+        ctx.stroke();
+        ctx.clip();
+    }
     ctx.setGlobalAlpha(1)
 }
 
@@ -272,7 +300,7 @@ const SetImageType: ImageType = {//none circle round
  * @todo 颜色支持多种渐变
  * @description 在二维码上设置文本
  */
- const SetTextCode = function (ctx: UniApp.CanvasContext, w: number, h: number, text: StrongCode.CodeText): void {
+ const SetTextCode = function (ctx: UniApp.CanvasContext, w: number, h: number, text: StrongCode.CodeText, source: string ): void {
     let colors = text.color || ["#FFFFFF"];
     const GRD = SetGradient(ctx, w, h, colors)
     ctx.restore();
@@ -280,8 +308,8 @@ const SetImageType: ImageType = {//none circle round
     ctx.setTextAlign('center');//'left'、'center'、'right'
 	ctx.setTextBaseline('middle');//可选值 'top'、'bottom'、'middle'、'normal'
     ctx.font = text?.font || "normal 20px system-ui",
-    ctx.setFillStyle(GRD)
-
+    // 小程序平台文字颜色不支持渐变
+    source == 'H5' ? ctx.setFillStyle(GRD) : ctx.setFillStyle(colors[0]);
 	ctx.fillText(text.content, w/2, w/2);
     ctx.setGlobalAlpha(1)
 }
