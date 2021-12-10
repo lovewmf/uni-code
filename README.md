@@ -7,16 +7,18 @@ npm run build // 打包
 
 ```
 
-|8月份|9月份|10月份|11月份|
-|:----:|:----:|:----:|:----:|
-| 183|221|351|736|
+# 无法识别请修改level纠错等级 默认4
+
+# type="2d"
 
 * canvas 2d 没有draw() 方法
-* 清空笔记可以使用clearRect()方法
+* 清空可以使用clearRect()方法
 * 没有setFillStyle方法,只有fillStyle属性
 * 没有setStrokeStyle方法,只有strokeStyle属性
 * 没有setGlobalAlpha方法,只要有globalAlpha属性
 
+# 百度小程序
+* canvas不支持arcTo方法
 # 相关问题
 
 1. 支付宝小程序画布模糊问题 https://opendocs.alipay.com/support/01rb8t
