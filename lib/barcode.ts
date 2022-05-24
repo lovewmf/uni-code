@@ -2,10 +2,12 @@ import {
     UNIT_CONVERSION, 
     SaveCodeImg,
     SetGradient,
-    getTimeDate
+    getTimeDate,
+    getPixelRatio,
+    GETSIZE
 } from '../common/support'
 
-import { BarCode128 } from '../codeType'
+import { BarCode128} from '../codeType'
 
 import {PATTERNS} from '../common/metadata'
 
@@ -34,8 +36,8 @@ export const OperationCode = function (opt: StrongCode.OperationCodePars, callba
     }
 }
 export const BarCodeCanvas = function (time: number,opt: StrongCode.OperationCodePars, ctx: UniApp.CanvasContext, callback?: Function) {
-    const width: number = UNIT_CONVERSION(opt.width);
-    const height: number = UNIT_CONVERSION(opt.height);
+    const width: number = GETSIZE[opt.source || 'none'](opt.width);
+    const height: number = GETSIZE[opt.source || 'none'](opt.height);
     //设置背景色
     ctx.setFillStyle(opt.bgColor || '#FFFFFF');
 
@@ -51,12 +53,15 @@ export const BarCodeCanvas = function (time: number,opt: StrongCode.OperationCod
             ...res,
             createTime: getTimeDate(),
             takeUpTime: ((new Date()).getTime()) - time, 
-            img: res.errMsg == "drawCanvas:ok" ? await SaveCodeImg({
+            img: await SaveCodeImg({
                 width: opt.width,
                 height: opt.height,
                 id: opt.id,
                 ctx: opt.ctx || null
-            }) : null,
+            }),
+            model: getPixelRatio('model') as string,// 设备型号
+            system: getPixelRatio('system') as string,// 操作系统名称及版本，如Android 10
+            platform: getPixelRatio('platform') as string, //客户端平台，值域为：ios、android、mac（3.1.10+）、windows（3.1.10+）、linux（3.1.10+）
             code: opt.code,
             with:  UNIT_CONVERSION(opt.width),
             height:  UNIT_CONVERSION(opt.height),
@@ -120,24 +125,10 @@ const SetBarCodeType: BarCodeType = {
      * @description 条形码类型 CODE39
      */
     "CODE39": function CODE39 (code: string, gc: GraphicContentInit, height: number): void {
-        const CodeNum: number[] = BarCode128(code);
-        let barWeight = gc.area.width / ((CodeNum.length - 3) * 11 + 35);
-        let x: number = gc.area.left;
-        const y = gc.area.top;
-        // const barH = height - y - this.border
-        const barH = height - gc.area.top;
-        for (let i = 0; i < CodeNum.length; i++) {
-            const c = CodeNum[i];
-            for (let bar = 0; bar < 8; bar += 2) {
-                const barW = PATTERNS[c][bar] * barWeight;
-                const spcW = PATTERNS[c][bar + 1] * barWeight;
-                if (barW > 0) {
-                    gc.fillFgRect(x, y, barW, barH);
-                }
-
-                x += barW + spcW;
-            }
-        }
+        // const CodeNum: string = BarCode39(code);
+        // console.log(CodeNum)
+        console.error("条形码编码类型：CODE39暂未实现");
+       
     },
     /**
      * @method EAN13

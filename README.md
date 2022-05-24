@@ -6,6 +6,22 @@ npm run install //安装依赖
 npm run build // 打包
 
 ```
+
+# 无法识别请修改level纠错等级 默认4
+
+# type="2d"
+
+* canvas 2d 没有draw() 方法
+* 清空可以使用clearRect()方法
+* 没有setFillStyle方法,只有fillStyle属性
+* 没有setStrokeStyle方法,只有strokeStyle属性
+* 没有setGlobalAlpha方法,只要有globalAlpha属性
+
+# 百度小程序
+* canvas不支持arcTo方法
+# 相关问题
+
+1. 支付宝小程序画布模糊问题 https://opendocs.alipay.com/support/01rb8t
 ## 示例地址
 
 `https://ext.dcloud.net.cn/plugin?id=4662`
@@ -31,7 +47,7 @@ qrc: {// 二维码
 	code: 'https://qm.qq.com/cgi-bin/qm/qr?k=LKqML292dD2WvwQfAJXBUmvgbiB_TZWF&noverify=0',
 	size: 460, // 二维码大小
 	level: 4, //纠错等级 0～4
-	type: 'none',
+	type: 'none', // 二维码 码点 默认none 可选值 dots square starry custom
 	src: '/static/35.png',//画布背景
 	bgColor: '#FFFFFF', //二维码背景色 默认白色 transparent 透明
 	padding: 0,//二维码margin 默认0 非必传
@@ -43,6 +59,7 @@ qrc: {// 二维码
 	},
 	text:{
 		// opacity: 1, //文字透明度 默认不透明
+		position: 'center', //中间 top bottom
 		size: 20,
 		font: 'bold 20px system-ui',//文字是否加粗 默认normal 20px system-ui
 		color: ["#000000"], // 文字颜色支持渐变色
