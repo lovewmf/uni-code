@@ -270,7 +270,7 @@ export class QRCodeInit {
     private neccblk1: number = 0;
     private datablkw: number = 0;
     private eccblkwid: number = 0;
-    constructor(level: number = 2){
+    constructor(level: number = 3){
         this.ecclevel = level
     }
     private setmask (x: number,y: number) {

@@ -12,7 +12,7 @@
         "allowUnreachableCode": true, // 不报告执行不到的代码错误。
         "allowJs": false, // 是否编辑js文件
         "strict": true, // 严格模式
-        "noUnusedLocals": true, // 未使用变量报错
+        // "noUnusedLocals": true, // 未使用变量报错
         "experimentalDecorators": true, // 启动装饰器
         "esModuleInterop": true,
         "declarationMap": false, // 生成定义sourceMapss

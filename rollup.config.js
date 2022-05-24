@@ -8,7 +8,7 @@ export default {
     output: {
         file: 'dist/code.wmf.min.js',
         name: 'CODE',
-        format: 'umd'//amd,cjs,es,iife,umd
+        format: 'es'//amd,cjs,es,iife,umd
     },
     plugins: [
         babel({

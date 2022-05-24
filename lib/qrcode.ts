@@ -49,7 +49,7 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
     const H: number = GETSIZE[opt.source || 'none'] ? GETSIZE[opt.source || 'none'](opt.size) : UNIT_CONVERSION(opt.size);
     const padding: number = ( UNIT_CONVERSION(opt.padding || 0) || 0) + (opt.border ? opt.border.lineWidth || 5 : 0);// 画布内边距 默认 0 单位rpx
     const px: number = Math.round((SIZE / (width + padding)));
-    const offset: number = Math.floor((SIZE -  px * width) / 2);
+    // const offset: number = Math.floor((SIZE -  px * width) / 2);
 
     ctx.clearRect(0, 0, W, H);
     ctx.setFillStyle(opt.bgColor || '#FFFFFF');//二维码背景色
@@ -62,7 +62,8 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
     for (let i = 0; i < width; i++) {//开始生成二维码
         for (let j = 0; j < width; j++) {
             if (frame[j * width + i]) {
-                SetCodeType[opt.type || 'none'] ? SetCodeType[opt.type || 'none'](opt.bgColor,ctx,px * i + offset, px * j + offset , px, px,opt.source) : SetCodeType[opt.type || 'none'](opt.bgColor,ctx,px * i + offset, px * j + offset , px, px,opt.source)
+                ctx.fillRect(px * i , px * j  , px, px);
+                // SetCodeType[opt.type || 'none'] ? SetCodeType[opt.type || 'none'](opt.bgColor,ctx,px * i + offset, px * j + offset , px, px,opt.source) : SetCodeType[opt.type || 'none'](opt.bgColor,ctx,px * i + offset, px * j + offset , px, px,opt.source)
             }
         }
     }
@@ -72,6 +73,7 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
     opt.text ? SetTextCode(ctx, W, H, opt.text,opt.source || "none") : false;
     // 绘制二维码边框 支持渐变 透明度
     opt.border ? SetBorderCode(ctx, W, H , opt.border, opt.source || "none") : false;
+    ctx.restore();
     ctx.draw(false, async (res) => {
         callback ? callback({
             ...res,
@@ -91,7 +93,6 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
             id: Object.prototype.toString.call(opt.id) == '[object String]' ? opt.id : "nvue"
         }) : null;
     });
-
 }
 type codeGroup = 'none' | 'starry'| 'square' | 'dots'| 'custom';
 interface CodeTypeValue {
