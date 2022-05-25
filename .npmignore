@@ -1,8 +1,16 @@
 node_modules
 src
+codeType
+common
+lib
+types
+index.ts
 .babelrc
 rollup.config.js
 package-lock.json
 package.json
 tsconfig.json
 README.md
+yarn.lock
+.npmignore
+.git*
