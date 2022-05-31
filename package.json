@@ -1,6 +1,6 @@
 {
   "name": "@uni-ui/code-plugs",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "条形码 二维码 js_sdk",
   "main": "dist/code.wmf.min.js",
   "scripts": {
