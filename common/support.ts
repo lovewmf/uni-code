@@ -740,12 +740,12 @@ export class QRCodeInit {
         this.strinbuf = this.qrframe.slice(0);
         TT = 0;
         YY = 30000;
-        for (let k = 0; k < 8; k++) {
-            this.applymask(k);
+        for ( KK = 0; KK < 8; KK++) {
+            this.applymask(KK);
             XX = this.badcheck();
             if (XX < YY) {
                 YY = XX;
-                TT = k;
+                TT = KK;
             }
             if (TT == 7)
                 break;
