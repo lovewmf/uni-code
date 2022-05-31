@@ -44,9 +44,9 @@ export const BarCodeCanvas = function (time: number,opt: StrongCode.OperationCod
     let gc = new GraphicContentInit(ctx, width, height);
     
     //设置颜色
-    opt.color ? SetBarCodeColors(ctx, width, height, opt.color || ['#000000']) : ctx.setFillStyle("#000000");
+    opt.color ? SetBarCodeColors(ctx, width, height, opt.color || ['#000000'],opt.orient) : ctx.setFillStyle("#000000");
 
-    SetBarCodeType[opt.type || 'CODE128'](opt.code,gc,height)
+    SetBarCodeType[opt.type || 'CODE128'](opt.code,gc,height,opt.orient)
     
     ctx.draw(false, async (res) => {
         callback ? callback({
@@ -54,8 +54,8 @@ export const BarCodeCanvas = function (time: number,opt: StrongCode.OperationCod
             createTime: getTimeDate(),
             takeUpTime: ((new Date()).getTime()) - time, 
             img: await SaveCodeImg({
-                width: opt.width,
-                height: opt.height,
+                width: opt.orient == 'vertical' ? opt.height : opt.width,
+                height: opt.orient == 'vertical' ? opt.width : opt.height,
                 id: opt.id,
                 ctx: opt.ctx || null
             }),
@@ -70,14 +70,14 @@ export const BarCodeCanvas = function (time: number,opt: StrongCode.OperationCod
     });
 }
 //设置条形码颜色渐变色
-const SetBarCodeColors = function (ctx: UniApp.CanvasContext,width: number,height: number,colors: string[]) {
-    const GRD = SetGradient(ctx,width,height,colors)
+const SetBarCodeColors = function (ctx: UniApp.CanvasContext,width: number,height: number,colors: string[],orient: string = 'horizontal') {
+    const GRD = SetGradient(ctx,orient == 'vertical' ? height : width,orient == 'vertical' ? width : height,colors)
     ctx.setFillStyle(GRD)
 }
 
 type codeGroup = 'CODE128' | 'CODE39' | 'EAN13' | 'UPCE' | 'UPCE' | 'UPC' | 'ITF' | 'ITF14' | 'MSI' | 'Codabar' | 'Pharmacode';
 interface CodeTypeValue {
-    (code: string, gc: GraphicContentInit,height: number): void
+    (code: string, gc: GraphicContentInit,height: number,orient: string): void
 }
 type BarCodeType = Record<codeGroup, CodeTypeValue>
 
@@ -96,7 +96,7 @@ const SetBarCodeType: BarCodeType = {
      * @param height 
      * @description 条形码类型 默认CODE128
      */
-    "CODE128": function CODE128 (code: string, gc: GraphicContentInit,height: number) {
+    "CODE128": function CODE128 (code: string, gc: GraphicContentInit,height: number,orient: string = 'horizontal') {
         const CodeNum: number[] = BarCode128(code);
         let barWeight = gc.area.width / ((CodeNum.length - 3) * 11 + 35);
         let x: number = gc.area.left;
@@ -109,7 +109,7 @@ const SetBarCodeType: BarCodeType = {
                 const barW = PATTERNS[c][bar] * barWeight;
                 const spcW = PATTERNS[c][bar + 1] * barWeight;
                 if (barW > 0) {
-                    gc.fillFgRect(x, y, barW, barH);
+                    gc.fillFgRect(orient == 'vertical' ? y : x, orient == 'vertical' ? x : y, orient == 'vertical' ? barH : barW, orient == 'vertical' ? barW : barH);
                 }
 
                 x += barW + spcW;

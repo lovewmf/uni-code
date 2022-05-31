@@ -120,6 +120,7 @@ declare namespace StrongCode {
         type?: string,
         source?: string,
         code: string,
+        orient?: string, //horizontal水平 vertical垂直
         bgColor?: string,
         color?: string[],
         ctx: object
