@@ -103,6 +103,22 @@ declare namespace StrongCode {
         ctx: object
     }
     /**
+     * @description 条形码文字
+     * @param size Number 文字大小 单位rpx
+     * @param content String 文字内容
+     * @param color Array 文字颜色 默认黑色
+     * @param position String 文字位置 top bottom
+     * @param padding Number 文字上下距离
+     */
+     interface TextConfig {
+        size?: number,
+        content: string,
+        opacity?: number,
+        color?: string[],
+        position?: string,
+        padding?: number,
+    }
+    /**
      * @description 条形码生成参数
      * @param id String 条形码canvas ID 必传√
      * @param width Number 条形码宽度 单位rpx 必传√
@@ -119,6 +135,7 @@ declare namespace StrongCode {
         height: number,
         type?: string,
         source?: string,
+        text?: TextConfig,
         code: string,
         orient?: string, //horizontal水平 vertical垂直
         bgColor?: string,

@@ -45,8 +45,10 @@ export const BarCodeCanvas = function (time: number,opt: StrongCode.OperationCod
     
     //设置颜色
     opt.color ? SetBarCodeColors(ctx, width, height, opt.color || ['#000000'],opt.orient) : ctx.setFillStyle("#000000");
-
-    SetBarCodeType[opt.type || 'CODE128'](opt.code,gc,height,opt.orient)
+    //开始画条形码
+    SetBarCodeType[opt.type || 'CODE128'](opt.code,gc,height,opt.orient,opt.text);
+    //设置文字
+    opt.text ? setBarCodeText(ctx,opt.text,width,height,opt.source || 'H5',opt.orient || 'horizontal') : false;
     
     ctx.draw(false, async (res) => {
         callback ? callback({
@@ -74,10 +76,35 @@ const SetBarCodeColors = function (ctx: UniApp.CanvasContext,width: number,heigh
     const GRD = SetGradient(ctx,orient == 'vertical' ? height : width,orient == 'vertical' ? width : height,colors)
     ctx.setFillStyle(GRD)
 }
-
+// 设置条形码文字
+const setBarCodeText = function (ctx: UniApp.CanvasContext, text: StrongCode.TextConfig, w: number, h: number,source: string,orient: string){
+    let colors = text.color || ["#000000"];
+    const GRD = SetGradient(ctx, w, h, colors);
+    ctx.setGlobalAlpha(text?.opacity || 1)
+    ctx.setTextAlign('center');
+    ctx.setTextBaseline('middle');
+	ctx.setFillStyle("#000000");
+	ctx.setFontSize(UNIT_CONVERSION(text.size as number || 40));
+    // 小程序平台文字颜色不支持渐变
+    source == 'H5' ? ctx.setFillStyle(GRD) : ctx.setFillStyle(colors[0]);//h +UNIT_CONVERSION(text.padding + text.size/2)
+    let y: number = text.position == 'bottom' ? h + UNIT_CONVERSION((text.padding || 40) + (text.size || 20)/2) : UNIT_CONVERSION(text.size as number)/2;
+    if(orient =='vertical'){
+        ctx.rotate(90 * Math.PI / 180);
+        if(text.position == 'bottom'){
+	        ctx.translate(w,-h)
+            ctx.fillText(text.content, -w/2, -UNIT_CONVERSION(text.padding || 20 + (text.size || 40)/2));
+        }else{
+            ctx.translate(-w/2,-y)
+	        ctx.fillText(text.content, w,-y);
+        }
+    }else{
+        ctx.fillText(text.content, w / 2, y);
+    }
+    ctx.setGlobalAlpha(1)
+}
 type codeGroup = 'CODE128' | 'CODE39' | 'EAN13' | 'UPCE' | 'UPCE' | 'UPC' | 'ITF' | 'ITF14' | 'MSI' | 'Codabar' | 'Pharmacode';
 interface CodeTypeValue {
-    (code: string, gc: GraphicContentInit,height: number,orient: string): void
+    (code: string, gc: GraphicContentInit,height: number,orient: string,text?: StrongCode.TextConfig): void
 }
 type BarCodeType = Record<codeGroup, CodeTypeValue>
 
@@ -96,11 +123,15 @@ const SetBarCodeType: BarCodeType = {
      * @param height 
      * @description 条形码类型 默认CODE128
      */
-    "CODE128": function CODE128 (code: string, gc: GraphicContentInit,height: number,orient: string = 'horizontal') {
+    "CODE128": function CODE128 (code: string, gc: GraphicContentInit,height: number,orient: string = 'horizontal',text?: StrongCode.TextConfig) {
         const CodeNum: number[] = BarCode128(code);
         let barWeight = gc.area.width / ((CodeNum.length - 3) * 11 + 35);
         let x: number = gc.area.left;
-        const y = gc.area.top;
+        let size: number = 0;
+        if(text){
+            text.position == 'bottom' ? 0 : size = UNIT_CONVERSION((text?.size || 40) + (text?.padding || 20))
+        }
+        const y = gc.area.top + size;
         // const barH = height - y - this.border
         const barH = height - gc.area.top;
         for (let i = 0; i < CodeNum.length; i++) {
