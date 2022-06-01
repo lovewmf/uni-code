@@ -14,7 +14,7 @@ export default {
         babel({
           exclude: 'node_modules/**'
         }),
-        // uglify(),
+        uglify(),
         typescript({
             tsconfig: getPath('./tsconfig.json')
         })
