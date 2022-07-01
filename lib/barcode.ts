@@ -1,5 +1,6 @@
 import {
     UNIT_CONVERSION, 
+    UtF16TO8,
     SaveCodeImg,
     SetGradient,
     getTimeDate,
@@ -38,6 +39,9 @@ export const OperationCode = function (opt: StrongCode.OperationCodePars, callba
 export const BarCodeCanvas = function (time: number,opt: StrongCode.OperationCodePars, ctx: UniApp.CanvasContext, callback?: Function) {
     const width: number = GETSIZE[opt.source || 'none'](opt.width);
     const height: number = GETSIZE[opt.source || 'none'](opt.height);
+
+    // 条形码code转码 主要针对纯汉字
+    const CODE: string = UtF16TO8(opt.code)
     //设置背景色
     ctx.setFillStyle(opt.bgColor || '#FFFFFF');
 
@@ -46,7 +50,7 @@ export const BarCodeCanvas = function (time: number,opt: StrongCode.OperationCod
     //设置颜色
     opt.color ? SetBarCodeColors(ctx, width, height, opt.color || ['#000000'],opt.orient) : ctx.setFillStyle("#000000");
     //开始画条形码
-    SetBarCodeType[opt.type || 'CODE128'](opt.code,gc,height,opt.orient,opt.text);
+    SetBarCodeType[opt.type || 'CODE128'](CODE,gc,height,opt.orient,opt.text);
     //设置文字
     opt.text ? setBarCodeText(ctx,opt.text,width,height,opt.source || 'H5',opt.orient || 'horizontal') : false;
     
@@ -86,7 +90,7 @@ const setBarCodeText = function (ctx: UniApp.CanvasContext, text: StrongCode.Tex
 	ctx.setFillStyle("#000000");
 	ctx.setFontSize(UNIT_CONVERSION(text.size as number || 40));
     // 小程序平台文字颜色不支持渐变
-    source == 'H5' ? ctx.setFillStyle(GRD) : ctx.setFillStyle(colors[0]);//h +UNIT_CONVERSION(text.padding + text.size/2)
+    source == 'H5' ? ctx.setFillStyle(GRD) : ctx.setFillStyle(colors[0]);
     let y: number = text.position == 'bottom' ? h + UNIT_CONVERSION((text.padding || 40) + (text.size || 20)/2) : UNIT_CONVERSION(text.size as number)/2;
     if(orient =='vertical'){
         ctx.rotate(90 * Math.PI / 180);
