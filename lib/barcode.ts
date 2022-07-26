@@ -37,14 +37,19 @@ export const OperationCode = function (opt: StrongCode.OperationCodePars, callba
     }
 }
 export const BarCodeCanvas = function (time: number,opt: StrongCode.OperationCodePars, ctx: UniApp.CanvasContext, callback?: Function) {
+    const HSize = opt.text ? (opt.text.size || 40) +  (opt.text.padding || 20) : 0;
     const width: number = GETSIZE[opt.source || 'none'](opt.width);
     const height: number = GETSIZE[opt.source || 'none'](opt.height);
-
     // 条形码code转码 主要针对纯汉字
     const CODE: string = UtF16TO8(opt.code)
     //设置背景色
-    ctx.setFillStyle(opt.bgColor || '#FFFFFF');
-
+    ctx.setFillStyle(opt.bgColor || '#FFFFFF');//条形码背景色
+	if (opt.orient == 'horizontal') {
+	    ctx.fillRect(0, 0,  width, GETSIZE[opt.source || 'none'](opt.height + HSize));//设置画布大小
+	}else{
+		ctx.fillRect(0, 0, GETSIZE[opt.source || 'none'](opt.height + HSize),width);//设
+	}
+    ctx.setFillStyle(opt.bgColor || '#FFFFFF');//二维码背景色
     let gc = new GraphicContentInit(ctx, width, height);
 
     //设置颜色

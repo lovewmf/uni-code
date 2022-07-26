@@ -145,6 +145,7 @@ export const SaveCodeImg = function(k: StrongCode.SaveCanvasPars): object{
         width = destWidth;
         height = destHeight;
     }
+    console.log(width,height)
     return new Promise((resolve)=>{
         if (Object.prototype.toString.call(k.id) == '[object String]') {
             uni.canvasToTempFilePath({
