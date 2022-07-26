@@ -73,17 +73,20 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
     // 绘制二维码边框 支持渐变 透明度
     opt.border ? SetBorderCode(ctx, W, H , opt.border, opt.source || "none") : false;
     ctx.restore();
+
     ctx.draw(false, async (res) => {
         callback ? callback({
             ...res,
             createTime: getTimeDate(),
-            takeUpTime: ((new Date()).getTime()) - time, 
+            takeUpTime: ((new Date()).getTime()) - time,
             img: await SaveCodeImg({
                 width: opt.size,
                 height: opt.size,
                 id: opt.id,
+                source: opt.source,
                 ctx: opt.ctx || null
             }),
+            source: opt.source,
             model: getPixelRatio('model') as string,// 设备型号
             system: getPixelRatio('system') as string,// 操作系统名称及版本，如Android 10
             platform: getPixelRatio('platform') as string, //客户端平台，值域为：ios、android、mac（3.1.10+）、windows（3.1.10+）、linux（3.1.10+）
@@ -203,7 +206,7 @@ const SetImageType: ImageType = {//none circle round
         ctx.closePath();
 		ctx.setLineWidth(GETSIZE[source](img.width || 5))
 		ctx.setStrokeStyle(img.color || "#FFFFFF"); // 设置绘制圆形边框的颜色
-		ctx.stroke(); 
+		ctx.stroke();
 		ctx.clip();
 		ctx.drawImage(img.src, x, y, w, w);
     },
@@ -227,11 +230,11 @@ const SetImageType: ImageType = {//none circle round
             ctx.closePath();
             ctx.setLineWidth(GETSIZE[source](img.width || 5))
             ctx.setStrokeStyle(img.color || "#FFFFFF"); // 设置绘制圆形边框的颜色
-            ctx.stroke(); 
+            ctx.stroke();
             ctx.clip();
             ctx.drawImage(img.src, x, y, w, w);
             return
-            
+
         }
         let r: number = img.degree || 5;
         const iconSize =  GETSIZE[source](img.size || 30);
@@ -257,7 +260,7 @@ const SetImageType: ImageType = {//none circle round
     }
 }
 /**
- * 
+ *
  * @method SetBorderCode
  * @author wmf
  * @todo 二维码边框 圆角 边框颜色支持多种渐变

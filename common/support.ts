@@ -136,11 +136,15 @@ export const UtF16TO8 = function (code: string | number): string{
  * @returns 
  */
 export const SaveCodeImg = function(k: StrongCode.SaveCanvasPars): object{
-    const width: number = UNIT_CONVERSION(Number(k.width));
-    const height: number = UNIT_CONVERSION(Number(k.height));
+    let width: number = UNIT_CONVERSION(Number(k.width));
+    let height: number = UNIT_CONVERSION(Number(k.height));
     const pixelRatio: number = getPixelRatio('pixelRatio') as  number;
     const destWidth: number = width * pixelRatio;
     const destHeight: number = height * pixelRatio;
+    if(k.source == 'MP-ALIPAY'){//支付宝小程序特殊处理
+        width = destWidth;
+        height = destHeight;
+    }
     return new Promise((resolve)=>{
         if (Object.prototype.toString.call(k.id) == '[object String]') {
             uni.canvasToTempFilePath({

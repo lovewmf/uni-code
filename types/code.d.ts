@@ -92,6 +92,7 @@ declare namespace StrongCode {
      * @param height Number 保存画布的高度 单位rpx 必传√ß
      * @param type String 保存图片的类型 默认 png 非必传
      * @param quality Number 保存图片的质量 默认 1 可选 0～1 非必传
+     * @param source
      * @param ctx Object 当前上下文
      */
     interface SaveCanvasPars {
@@ -100,6 +101,7 @@ declare namespace StrongCode {
         width: string | number,
         height: string | number,
         quality?: number,
+        source?: string,
         ctx: object
     }
     /**

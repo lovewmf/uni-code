@@ -7,8 +7,6 @@ npm run build // 打包
 
 ```
 
-# 无法识别请修改level纠错等级 默认4
-
 # type="2d"
 
 * canvas 2d 没有draw() 方法

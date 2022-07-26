@@ -1,5 +1,5 @@
 import {
-    UNIT_CONVERSION, 
+    UNIT_CONVERSION,
     UtF16TO8,
     SaveCodeImg,
     SetGradient,
@@ -13,7 +13,7 @@ import { BarCode128} from '../codeType'
 import {PATTERNS} from '../common/metadata'
 
 /**
-* @author wmf❤洛尘 
+* @author wmf❤洛尘
 * @method OperationCode 创建条形码
 * @description 使用UniApp的条形码
 */
@@ -46,29 +46,31 @@ export const BarCodeCanvas = function (time: number,opt: StrongCode.OperationCod
     ctx.setFillStyle(opt.bgColor || '#FFFFFF');
 
     let gc = new GraphicContentInit(ctx, width, height);
-    
+
     //设置颜色
     opt.color ? SetBarCodeColors(ctx, width, height, opt.color || ['#000000'],opt.orient) : ctx.setFillStyle("#000000");
     //开始画条形码
     SetBarCodeType[opt.type || 'CODE128'](CODE,gc,height,opt.orient,opt.text);
     //设置文字
     opt.text ? setBarCodeText(ctx,opt.text,width,height,opt.source || 'H5',opt.orient || 'horizontal') : false;
-    
+
     ctx.draw(false, async (res) => {
         callback ? callback({
             ...res,
             createTime: getTimeDate(),
-            takeUpTime: ((new Date()).getTime()) - time, 
+            takeUpTime: ((new Date()).getTime()) - time,
             img: await SaveCodeImg({
                 width: opt.orient == 'vertical' ? opt.height : opt.width,
                 height: opt.orient == 'vertical' ? opt.width : opt.height,
                 id: opt.id,
+                source: opt.source,
                 ctx: opt.ctx || null
             }),
             model: getPixelRatio('model') as string,// 设备型号
             system: getPixelRatio('system') as string,// 操作系统名称及版本，如Android 10
             platform: getPixelRatio('platform') as string, //客户端平台，值域为：ios、android、mac（3.1.10+）、windows（3.1.10+）、linux（3.1.10+）
             code: opt.code,
+            source: opt.source,
             with:  UNIT_CONVERSION(opt.width),
             height:  UNIT_CONVERSION(opt.height),
             id: Object.prototype.toString.call(opt.id) == '[object String]' ? opt.id : "nvue"
@@ -123,8 +125,8 @@ const SetBarCodeType: BarCodeType = {
     /**
      * @method CODE128
      * @param code 条形码的值
-     * @param gc 
-     * @param height 
+     * @param gc
+     * @param height
      * @description 条形码类型 默认CODE128
      */
     "CODE128": function CODE128 (code: string, gc: GraphicContentInit,height: number,orient: string = 'horizontal',text?: StrongCode.TextConfig) {
@@ -154,8 +156,8 @@ const SetBarCodeType: BarCodeType = {
     /**
      * @method CODE39
      * @param code 条形码的值
-     * @param gc 
-     * @param height 
+     * @param gc
+     * @param height
      * @todo 待实现
      * @description 条形码类型 CODE39
      */
@@ -163,13 +165,13 @@ const SetBarCodeType: BarCodeType = {
         // const CodeNum: string = BarCode39(code);
         // console.log(CodeNum)
         console.error("条形码编码类型：CODE39暂未实现");
-       
+
     },
     /**
      * @method EAN13
      * @param code 条形码的值
-     * @param gc 
-     * @param height 
+     * @param gc
+     * @param height
      * @todo 待实现
      * @description 条形码类型 EAN2
      */
@@ -183,8 +185,8 @@ const SetBarCodeType: BarCodeType = {
     /**
      * @method UPCE
      * @param code 条形码的值
-     * @param gc 
-     * @param height 
+     * @param gc
+     * @param height
      * @todo 待实现
      * @description 条形码类型 UPCE
      */
@@ -198,8 +200,8 @@ const SetBarCodeType: BarCodeType = {
     /**
      * @method UPC
      * @param code 条形码的值
-     * @param gc 
-     * @param height 
+     * @param gc
+     * @param height
      * @todo 待实现
      * @description 条形码类型 UPC
      */
@@ -213,8 +215,8 @@ const SetBarCodeType: BarCodeType = {
     /**
      * @method ITF
      * @param code 条形码的值
-     * @param gc 
-     * @param height 
+     * @param gc
+     * @param height
      * @todo 待实现
      * @description 条形码类型 ITF
      */
@@ -228,8 +230,8 @@ const SetBarCodeType: BarCodeType = {
     /**
      * @method ITF14
      * @param code 条形码的值
-     * @param gc 
-     * @param height 
+     * @param gc
+     * @param height
      * @todo 待实现
      * @description 条形码类型 ITF14
      */
@@ -243,8 +245,8 @@ const SetBarCodeType: BarCodeType = {
     /**
      * @method MSI
      * @param code 条形码的值
-     * @param gc 
-     * @param height 
+     * @param gc
+     * @param height
      * @todo 待实现
      * @description 条形码类型 MSI
      */
@@ -258,8 +260,8 @@ const SetBarCodeType: BarCodeType = {
     /**
      * @method Codabar
      * @param code 条形码的值
-     * @param gc 
-     * @param height 
+     * @param gc
+     * @param height
      * @todo 待实现
      * @description 条形码类型 Codabar
      */
@@ -273,8 +275,8 @@ const SetBarCodeType: BarCodeType = {
     /**
      * @method Pharmacode
      * @param code 条形码的值
-     * @param gc 
-     * @param height 
+     * @param gc
+     * @param height
      * @todo 待实现
      * @description 条形码类型 Pharmacode
      */
@@ -318,7 +320,7 @@ class GraphicContentInit {
         this.fillBgRect(0,0, width, height);
         this.fillBgRect(0, this.borderSize, width, height - this.borderSize * 2);
     }
-    
+
     fillFgRect(x: number,y: number, width: number, height: number) {
 		this.FILLRECT(x,y,width, height);
 	};
