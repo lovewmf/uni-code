@@ -73,28 +73,34 @@ const RepaintCanvas = function (time: number,opt: StrongCode.BarCodePars, ctx: U
     // 绘制二维码边框 支持渐变 透明度
     opt.border ? SetBorderCode(ctx, W, H , opt.border, opt.source || "none") : false;
     ctx.restore();
-
-    ctx.draw(false, async (res) => {
-        callback ? callback({
-            ...res,
-            createTime: getTimeDate(),
-            takeUpTime: ((new Date()).getTime()) - time,
-            img: await SaveCodeImg({
-                width: opt.size,
-                height: opt.size,
-                id: opt.id,
+    starDraw(ctx,opt,time,callback)//开始绘制
+    
+}
+const starDraw = function (ctx: UniApp.CanvasContext,opt: StrongCode.BarCodePars,time: number,callback?: Function): void {
+    setTimeout(()=>{
+        ctx.draw(false, async (res) => {
+            callback ? callback({
+                ...res,
+                createTime: getTimeDate(),
+                takeUpTime: ((new Date()).getTime()) - time,
+                img: await SaveCodeImg({
+                    width: opt.size,
+                    height: opt.size,
+                    id: opt.id,
+                    source: opt.source,
+                    ctx: opt.ctx || null
+                }),
                 source: opt.source,
-                ctx: opt.ctx || null
-            }),
-            source: opt.source,
-            model: getPixelRatio('model') as string,// 设备型号
-            system: getPixelRatio('system') as string,// 操作系统名称及版本，如Android 10
-            platform: getPixelRatio('platform') as string, //客户端平台，值域为：ios、android、mac（3.1.10+）、windows（3.1.10+）、linux（3.1.10+）
-            code: opt.code,
-            size:  UNIT_CONVERSION(opt.size),
-            id: Object.prototype.toString.call(opt.id) == '[object String]' ? opt.id : "nvue"
-        }) : null;
-    });
+                model: getPixelRatio('model') as string,// 设备型号
+                system: getPixelRatio('system') as string,// 操作系统名称及版本，如Android 10
+                platform: getPixelRatio('platform') as string, //客户端平台，值域为：ios、android、mac（3.1.10+）、windows（3.1.10+）、linux（3.1.10+）
+                code: opt.code,
+                size:  UNIT_CONVERSION(opt.size),
+                id: Object.prototype.toString.call(opt.id) == '[object String]' ? opt.id : "nvue"
+            }) : null;
+        });
+    },300)
+    
 }
 type codeGroup = 'none' | 'starry'| 'square' | 'dots'| 'custom';
 interface CodeTypeValue {

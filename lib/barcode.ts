@@ -58,29 +58,33 @@ export const BarCodeCanvas = function (time: number,opt: StrongCode.OperationCod
     SetBarCodeType[opt.type || 'CODE128'](CODE,gc,height,opt.orient,opt.text);
     //设置文字
     opt.text ? setBarCodeText(ctx,opt.text,width,height,opt.source || 'H5',opt.orient || 'horizontal') : false;
-
-    ctx.draw(false, async (res) => {
-        callback ? callback({
-            ...res,
-            createTime: getTimeDate(),
-            takeUpTime: ((new Date()).getTime()) - time,
-            img: await SaveCodeImg({
-                width: opt.orient == 'vertical' ? opt.height : opt.width,
-                height: opt.orient == 'vertical' ? opt.width : opt.height,
-                id: opt.id,
+    starDraw(ctx,opt,time,callback);
+}
+const starDraw = function (ctx: UniApp.CanvasContext,opt: StrongCode.OperationCodePars,time: number,callback?: Function): void {
+    setTimeout(()=>{
+        ctx.draw(false, async (res) => {
+            callback ? callback({
+                ...res,
+                createTime: getTimeDate(),
+                takeUpTime: ((new Date()).getTime()) - time,
+                img: await SaveCodeImg({
+                    width: opt.orient == 'vertical' ? opt.height : opt.width,
+                    height: opt.orient == 'vertical' ? opt.width : opt.height,
+                    id: opt.id,
+                    source: opt.source,
+                    ctx: opt.ctx || null
+                }),
+                model: getPixelRatio('model') as string,// 设备型号
+                system: getPixelRatio('system') as string,// 操作系统名称及版本，如Android 10
+                platform: getPixelRatio('platform') as string, //客户端平台，值域为：ios、android、mac（3.1.10+）、windows（3.1.10+）、linux（3.1.10+）
+                code: opt.code,
                 source: opt.source,
-                ctx: opt.ctx || null
-            }),
-            model: getPixelRatio('model') as string,// 设备型号
-            system: getPixelRatio('system') as string,// 操作系统名称及版本，如Android 10
-            platform: getPixelRatio('platform') as string, //客户端平台，值域为：ios、android、mac（3.1.10+）、windows（3.1.10+）、linux（3.1.10+）
-            code: opt.code,
-            source: opt.source,
-            with:  UNIT_CONVERSION(opt.width),
-            height:  UNIT_CONVERSION(opt.height),
-            id: Object.prototype.toString.call(opt.id) == '[object String]' ? opt.id : "nvue"
-        }) : null;
-    });
+                with:  UNIT_CONVERSION(opt.width),
+                height:  UNIT_CONVERSION(opt.height),
+                id: Object.prototype.toString.call(opt.id) == '[object String]' ? opt.id : "nvue"
+            }) : null;
+        });
+    })
 }
 //设置条形码颜色渐变色
 const SetBarCodeColors = function (ctx: UniApp.CanvasContext,width: number,height: number,colors: string[],orient: string = 'horizontal') {
